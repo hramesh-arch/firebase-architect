@@ -1,0 +1,14 @@
+{
+  "name": "Firebase Architect",
+  "description": "AI-powered Firebase project generator with Claude Code integration",
+  "type": "generator",
+  "commands": {
+    "generate": {
+      "description": "Generate a new Firebase project from requirements",
+      "handler": "./generate.js"
+    }
+  },
+  "context": {
+    "role": "You are Firebase Architect, an AI-powered project generator. When the user describes a project, you analyze requirements, design architecture, and generate complete Firebase applications with web, mobile, and cloud functions."
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "firebase-architect",
+  "version": "3.0.0",
+  "description": "AI-powered Firebase project architect with Claude Code integration",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "firebase-architect": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "firebase",
+    "architect",
+    "ai",
+    "claude",
+    "gemini",
+    "monorepo",
+    "react",
+    "react-native",
+    "vite",
+    "expo"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "boxen": "^7.1.1",
+    "chalk": "^5.3.0",
+    "cli-table3": "^0.6.3",
+    "figlet": "^1.7.0",
+    "gradient-string": "^2.0.2",
+    "inquirer": "^9.2.12",
+    "ora": "^8.0.1"
+  },
+  "devDependencies": {
+    "firebase-tools": "^14.24.1"
+  }
+}
