@@ -572,6 +572,14 @@ async function generateProject(config) {
   const { generateTypes } = await import('./generators/types.js');
   const { generateDocs } = await import('./generators/docs.js');
 
+  // Import new setup modules
+  const { setupFirebaseProject, displayFirebaseSummary } = await import('./generators/firebase-setup.js');
+  const { installDependencies, deployFirebaseResources, displayDeploymentSummary } = await import('./generators/deployment.js');
+  const { initializeGit, promptGitHubSetup, createGitHubRepository, pushToRemote, displayGitSummary } = await import('./generators/git-setup.js');
+
+  // PHASE 1: Generate code structure
+  console.log(chalk.cyan.bold('\n📁 PHASE 1: Generating Project Structure\n'));
+
   // Generate based on project type
   if (config.projectType === 'monorepo' || config.platforms?.length > 1) {
     await generateMonorepo(config);
@@ -596,27 +604,148 @@ async function generateProject(config) {
   // Generate documentation
   await generateDocs(config, projectPath);
 
-  console.log(chalk.green.bold('\n✅ Project generated successfully!\n'));
-  displayNextSteps(config);
+  console.log(chalk.green('✅ Project structure generated\n'));
+
+  // PHASE 2: Firebase Setup
+  console.log(chalk.cyan.bold('🔥 PHASE 2: Firebase Setup\n'));
+
+  let firebaseInfo = null;
+  try {
+    firebaseInfo = await setupFirebaseProject(config);
+    displayFirebaseSummary(firebaseInfo);
+  } catch (error) {
+    console.log(chalk.yellow('⚠️  Firebase setup skipped - you can set this up manually later\n'));
+    console.log(chalk.gray(`   Error: ${error.message}\n`));
+  }
+
+  // PHASE 3: Install Dependencies
+  console.log(chalk.cyan.bold('📦 PHASE 3: Installing Dependencies\n'));
+
+  const dependenciesInstalled = await installDependencies(projectPath);
+
+  // PHASE 4: Deploy Firebase Resources
+  console.log(chalk.cyan.bold('🚀 PHASE 4: Deploying Firebase Resources\n'));
+
+  let deploymentResults = null;
+  if (firebaseInfo && dependenciesInstalled) {
+    try {
+      deploymentResults = await deployFirebaseResources(projectPath, config);
+      displayDeploymentSummary(deploymentResults);
+    } catch (error) {
+      console.log(chalk.yellow('⚠️  Firebase deployment skipped - deploy manually later\n'));
+      console.log(chalk.gray(`   Run: firebase deploy --only firestore:rules,firestore:indexes\n`));
+    }
+  } else {
+    console.log(chalk.yellow('⚠️  Skipping Firebase deployment (Firebase not set up or dependencies not installed)\n'));
+  }
+
+  // PHASE 5: Git Setup
+  console.log(chalk.cyan.bold('📦 PHASE 5: Git Repository Setup\n'));
+
+  const gitInfo = {
+    initialized: false,
+    repoUrl: null,
+    pushed: false
+  };
+
+  const gitInitialized = await initializeGit(projectPath, config);
+  gitInfo.initialized = gitInitialized;
+
+  if (gitInitialized) {
+    // Ask about GitHub
+    const githubOptions = await promptGitHubSetup();
+
+    if (githubOptions) {
+      const githubInfo = await createGitHubRepository(projectPath, config.projectName, githubOptions);
+
+      if (githubInfo) {
+        gitInfo.repoUrl = githubInfo.url;
+
+        // Ask to push
+        const pushed = await pushToRemote(projectPath);
+        gitInfo.pushed = pushed;
+      }
+    }
+  }
+
+  displayGitSummary(gitInfo);
+
+  // PHASE 6: Final Summary
+  console.log(chalk.green.bold('\n✅ Environment Setup Complete!\n'));
+  await displayFinalSummary(config, projectPath, firebaseInfo, gitInfo);
 }
 
-function displayNextSteps(config) {
-  const steps = [
-    `cd ${config.projectName}`,
-    'Review the generated architecture in ARCHITECTURE.md',
-    'Check out .claude/ directory for Claude Code context',
-    'Configure Firebase: Update .env files with credentials',
-    'Install dependencies: npm install',
-    'Start development: npm run dev'
-  ];
+async function displayFinalSummary(config, projectPath, firebaseInfo, gitInfo) {
+  // Build summary sections
+  const sections = [];
+
+  // Project info
+  sections.push(chalk.cyan.bold('📂 Project Location:'));
+  sections.push(chalk.white(`   ${projectPath}`));
+  sections.push('');
+
+  // Firebase info
+  if (firebaseInfo) {
+    sections.push(chalk.cyan.bold('🔥 Firebase:'));
+    sections.push(chalk.white(`   Project ID: ${firebaseInfo.projectId}`));
+    sections.push(chalk.white(`   Console: ${chalk.underline(firebaseInfo.consoleUrl)}`));
+    sections.push('');
+  }
+
+  // Git info
+  if (gitInfo?.repoUrl) {
+    sections.push(chalk.cyan.bold('📦 GitHub:'));
+    sections.push(chalk.white(`   ${chalk.underline(gitInfo.repoUrl)}`));
+    sections.push('');
+  }
+
+  // Next steps
+  const nextSteps = [];
+
+  if (!firebaseInfo) {
+    nextSteps.push('Set up Firebase project manually at console.firebase.google.com');
+  }
+
+  nextSteps.push(`cd ${config.projectName}`);
+  nextSteps.push('Review ARCHITECTURE.md and .claude/ directory');
+
+  if (!gitInfo?.pushed && gitInfo?.initialized) {
+    nextSteps.push('Push to remote: git push -u origin main');
+  }
+
+  nextSteps.push('Start development: npm run dev:web');
+
+  sections.push(chalk.cyan.bold('📋 Next Steps:'));
+  nextSteps.forEach((step, i) => {
+    sections.push(chalk.white(`   ${i + 1}. ${step}`));
+  });
 
   console.log(boxen(
-    chalk.cyan.bold('Next Steps:\n\n') +
-    steps.map((step, i) => chalk.white(`${i + 1}. ${step}`)).join('\n'),
-    { padding: 1, borderColor: 'green', borderStyle: 'round' }
+    sections.join('\n'),
+    { padding: 1, borderColor: 'green', borderStyle: 'round', margin: 1 }
   ));
 
-  console.log(chalk.gray('\n💡 Tip: Open this project in VS Code with Claude Code extension for guided development\n'));
+  // Ask to open in VS Code
+  const { openVSCode } = await inquirer.prompt([{
+    type: 'confirm',
+    name: 'openVSCode',
+    message: chalk.cyan('🚀 Open project in VS Code now?'),
+    default: true
+  }]);
+
+  if (openVSCode) {
+    try {
+      execSync(`code "${projectPath}"`, { stdio: 'ignore' });
+      console.log(chalk.green('\n✅ Opened in VS Code!\n'));
+      console.log(chalk.cyan('💡 Use Claude Code in VS Code to continue building your project\n'));
+    } catch (error) {
+      console.log(chalk.yellow('\n⚠️  Could not open VS Code automatically'));
+      console.log(chalk.gray(`   Run manually: code "${projectPath}"\n`));
+    }
+  } else {
+    console.log(chalk.cyan('\n💡 Open in VS Code when ready:'));
+    console.log(chalk.white(`   code "${projectPath}"\n`));
+  }
 }
 
 async function generateFromTemplate(template, projectDetails) {
