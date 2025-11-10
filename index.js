@@ -637,6 +637,7 @@ async function generateProject(config) {
   const { installDependencies, deployFirebaseResources, displayDeploymentSummary } = await import('./generators/deployment.js');
   const { initializeGit, promptGitHubSetup, createGitHubRepository, pushToRemote, displayGitSummary } = await import('./generators/git-setup.js');
   const { generateDevelopmentRoadmap, displayRoadmapSummary } = await import('./generators/roadmap.js');
+  const { generateDevMode } = await import('./generators/dev-mode.js');
 
   // PHASE 1: Generate code structure
   console.log(chalk.cyan.bold('\n📁 PHASE 1: Generating Project Structure\n'));
@@ -661,6 +662,10 @@ async function generateProject(config) {
   if (config.dataModels) {
     await generateTypes(config, projectPath);
   }
+
+  // Generate development mode (if enabled)
+  // This creates mock auth, role switcher, and open security rules
+  await generateDevMode(config, projectPath);
 
   // Generate documentation
   await generateDocs(config, projectPath);
