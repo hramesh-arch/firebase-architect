@@ -576,6 +576,7 @@ async function generateProject(config) {
   const { setupFirebaseProject, displayFirebaseSummary } = await import('./generators/firebase-setup.js');
   const { installDependencies, deployFirebaseResources, displayDeploymentSummary } = await import('./generators/deployment.js');
   const { initializeGit, promptGitHubSetup, createGitHubRepository, pushToRemote, displayGitSummary } = await import('./generators/git-setup.js');
+  const { generateDevelopmentRoadmap, displayRoadmapSummary } = await import('./generators/roadmap.js');
 
   // PHASE 1: Generate code structure
   console.log(chalk.cyan.bold('\n📁 PHASE 1: Generating Project Structure\n'));
@@ -603,6 +604,10 @@ async function generateProject(config) {
 
   // Generate documentation
   await generateDocs(config, projectPath);
+
+  // Generate development roadmap
+  await generateDevelopmentRoadmap(config, projectPath);
+  displayRoadmapSummary();
 
   console.log(chalk.green('✅ Project structure generated\n'));
 
@@ -707,7 +712,8 @@ async function displayFinalSummary(config, projectPath, firebaseInfo, gitInfo) {
   }
 
   nextSteps.push(`cd ${config.projectName}`);
-  nextSteps.push('Review ARCHITECTURE.md and .claude/ directory');
+  nextSteps.push('Review .claude/ROADMAP.md for development plan');
+  nextSteps.push('Check .claude/TASKS.md for immediate tasks');
 
   if (!gitInfo?.pushed && gitInfo?.initialized) {
     nextSteps.push('Push to remote: git push -u origin main');

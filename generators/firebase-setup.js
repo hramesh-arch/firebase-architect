@@ -29,7 +29,7 @@ export async function setupFirebaseProject(config) {
     } else {
       // Create new Firebase project
       spinner.text = 'Creating Firebase project...';
-      createFirebaseProject(config.projectName, config.displayName || config.projectName);
+      await createFirebaseProject(config.projectName, config.displayName || config.projectName);
       spinner.succeed(chalk.green(`Firebase project '${config.projectName}' created`));
     }
 
@@ -77,7 +77,7 @@ function getFirebaseProjects() {
 /**
  * Create a new Firebase project using Firebase CLI
  */
-function createFirebaseProject(projectId, displayName) {
+async function createFirebaseProject(projectId, displayName) {
   try {
     // Firebase CLI doesn't directly support project creation via command line
     // We'll use firebase-tools API or guide user through manual creation
@@ -100,10 +100,17 @@ function createFirebaseProject(projectId, displayName) {
       console.log(chalk.white(`   4. Enter display name: ${chalk.bold(displayName)}`));
       console.log(chalk.white('   5. Follow the prompts (disable Analytics if you want)\n'));
 
-      const { created } = execSync('read -p "Press ENTER after creating the project..." dummy && echo "done"', {
-        shell: '/bin/bash',
-        stdio: 'inherit'
-      });
+      // Use inquirer for cross-platform compatibility
+      const { created } = await inquirer.prompt([{
+        type: 'confirm',
+        name: 'created',
+        message: 'Have you created the Firebase project?',
+        default: false
+      }]);
+
+      if (!created) {
+        throw new Error('Firebase project creation cancelled by user');
+      }
     }
   } catch (error) {
     throw new Error(`Failed to create Firebase project: ${error.message}`);

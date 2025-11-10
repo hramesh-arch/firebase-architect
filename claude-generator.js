@@ -61,6 +61,7 @@ export async function generateProject(architecture) {
   const { generateSecurityRules } = await import('./generators/security-rules.js');
   const { generateTypes } = await import('./generators/types.js');
   const { generateDocs } = await import('./generators/docs.js');
+  const { generateDevelopmentRoadmap } = await import('./generators/roadmap.js');
 
   // Generate based on project type
   if (architecture.projectType === 'monorepo' || architecture.platforms?.length > 1) {
@@ -85,6 +86,9 @@ export async function generateProject(architecture) {
 
   // Generate documentation
   await generateDocs(architecture, projectPath);
+
+  // Generate development roadmap
+  await generateDevelopmentRoadmap(architecture, projectPath);
 
   // Git initialization (if requested)
   if (architecture.git?.init !== false) {
