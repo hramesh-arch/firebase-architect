@@ -209,6 +209,103 @@ const styles = {
 
 ---
 
+## 🏢 Enterprise Responsive Patterns
+
+For **data-intensive enterprise applications** (CRMs, analytics, workflow tools), Firebase Architect includes specialized responsive patterns:
+
+### Enterprise Breakpoints
+```javascript
+{
+  mobile: '375px',
+  tablet: '768px',
+  laptop: '1024px',
+  desktop: '1280px',
+  wide: '1440px',
+  ultrawide: '1920px'  // For maximum data density
+}
+```
+
+### Data Density Modes
+Perfect for power users who want to see more information:
+
+```javascript
+// Compact mode - power users on large screens
+{
+  rowHeight: '32px',
+  padding: '8px',
+  fontSize: '13px'
+}
+
+// Comfortable mode - default
+{
+  rowHeight: '40px',
+  padding: '12px',
+  fontSize: '14px'
+}
+
+// Spacious mode - accessibility focused
+{
+  rowHeight: '48px',
+  padding: '16px',
+  fontSize: '16px'
+}
+```
+
+### Multi-Panel Layouts
+Enterprise apps often need multiple panels:
+
+```javascript
+// Three-panel layout (sidebar + main + properties)
+{
+  mobile: { sidebar: '0px', main: '100%', properties: '0px' },     // Hide panels, use modals
+  laptop: { sidebar: '240px', main: 'calc(100% - 540px)', properties: '300px' },
+  desktop: { sidebar: '280px', main: 'calc(100% - 640px)', properties: '360px' }
+}
+```
+
+### Data Table Strategies
+
+Tables adapt based on screen size:
+- **Mobile**: Transform to card view (stacked)
+- **Tablet**: Simplified table (3-5 key columns)
+- **Laptop**: Scrollable table (most columns, horizontal scroll)
+- **Desktop**: Full table (all columns visible)
+- **Ultrawide**: Dense table (compact spacing, metadata columns)
+
+### Dashboard Layouts
+
+Analytics and dashboards scale their grid:
+- **Mobile**: 1 column (vertical stack)
+- **Tablet**: 2 columns
+- **Laptop**: 3 columns
+- **Desktop**: 4 columns
+- **Ultrawide**: 6 columns (maximum density)
+
+### Usage Example
+
+```javascript
+import { generateEnterpriseConfig } from './config/enterprise-responsive.config';
+
+// Get config for your app type
+const config = generateEnterpriseConfig('crm');
+// Returns: minimum width, density modes, panel layouts, table strategies, etc.
+
+// Use in your components
+const densitySettings = getDensitySettings('compact');  // For power users
+const panelLayout = getPanelLayout('threePanel', 'desktop');
+const pageSize = getRecommendedPageSize('desktop');  // Returns 100
+```
+
+### When to Use Enterprise Patterns
+
+- ✅ CRM applications (minimum 1024px recommended)
+- ✅ Analytics/BI dashboards (minimum 1280px recommended)
+- ✅ Workflow management tools (minimum 1024px recommended)
+- ✅ Data-heavy applications with complex tables
+- ✅ Power user tools optimized for large screens
+
+---
+
 ## ✅ Testing Checklist
 
 Every generated project includes a responsive testing checklist:
@@ -283,10 +380,11 @@ When you create a Firebase app, you'll find:
 project-name/
 ├── apps/web/src/
 │   └── config/
-│       ├── responsive.config.js       # All responsive standards
-│       └── viewport-meta.txt          # Viewport meta tag reminder
+│       ├── responsive.config.js                # All responsive standards
+│       ├── enterprise-responsive.config.js     # Enterprise-specific patterns
+│       └── viewport-meta.txt                   # Viewport meta tag reminder
 └── .claude/
-    └── RESPONSIVE_BEST_PRACTICES.md   # Complete guide
+    └── RESPONSIVE_BEST_PRACTICES.md           # Complete guide
 ```
 
 ---
@@ -324,10 +422,14 @@ When you create a Firebase app with Firebase Architect:
 ✅ **Readable typography** - Fluid sizing for all devices
 ✅ **Professional polish** - Z-index scale, transitions, easings
 ✅ **Framework-integrated** - Works with your chosen UI library
+✅ **Enterprise-ready** - Specialized patterns for CRMs, analytics, and data-heavy apps
+✅ **Power-user optimized** - Data density modes for large screens
 ✅ **Documented** - Complete guide in `.claude/` folder
 ✅ **Testing checklist** - Know exactly what to test
 
 **You can focus on building features, not figuring out responsive design.**
+
+Whether you're building a simple web app or a complex enterprise CRM, Firebase Architect provides the responsive foundation you need.
 
 ---
 
