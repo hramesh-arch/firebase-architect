@@ -1,55 +1,122 @@
 # 🚀 Start Here - Firebase Architect
 
-## The Simplest Way to Build Firebase Apps
+## The Fastest Way to Set Up Firebase Projects
 
-### Step 1: Open in VS Code with Claude Code
+**Firebase Architect = Environment Setup Wizard**
+**Claude Code = Feature Builder**
+
+### Step 1: Open Claude Code in Parent Directory
 ```bash
-cd /Users/harshithramesh/Builds/firebase-architect
+cd /home/user
 code .
 ```
 
-### Step 2: Tell Claude What You Want
+### Step 2: Start the Setup Wizard
 ```
-Create a jet charter agent management platform with:
-- Agent onboarding and training
+/new-firebase-app
+```
+
+### Step 3: Describe Your App
+```
+Tell me about your app - what are you building?
+
+"I'm building a jet charter agent management platform with:
+- Agent onboarding and training system
 - LMS with quizzes and certification
 - Agent and client CRM
-- Quote pipeline management
+- Quote pipeline management with stages
 - Admin dashboard with analytics
-- Messaging system
-- Multi-role access (admin, agent, master_qa)
+- Internal messaging system
+- Multi-role access (admin, agent, master_qa, client)"
 ```
 
-### Step 3: Done!
+### Step 4: Answer Follow-Up Questions
+Claude will ask only what's needed:
+- Missing platform details
+- Unclear integrations
+- Specific data relationships
 
-Claude will:
-1. ✅ Analyze your requirements
-2. ✅ Design the complete architecture
-3. ✅ Extract data models automatically
-4. ✅ Generate the entire codebase
-5. ✅ Create documentation
-6. ✅ Set up Claude Code context for future help
+### Step 5: Environment Setup (Automated)
+```
+📁 Phase 1: Generating project structure...
+✅ Project structure created
 
-**Time: 2-3 minutes**
+🔥 Phase 2: Setting up Firebase...
+✅ Firebase project created
+✅ Firebase Web App created
+✅ Firebase config saved to .env.example
+
+📦 Phase 3: Installing dependencies...
+✅ Dependencies installed
+
+🚀 Phase 4: Deploying Firebase resources...
+✅ Firestore rules deployed
+✅ Firestore indexes deployed
+
+📦 Phase 5: Setting up version control...
+✅ Git repository initialized
+✅ GitHub repository created
+
+🎉 Setup Complete!
+```
+
+### Step 6: Start Building Features
+Claude Code reads the handoff prompt and starts implementing features from the roadmap.
+
+**Total Time: 1-2 minutes for setup, then development begins**
 
 ---
 
 ## What You Get
 
+### Fully Configured Environment
 ```
 your-project/
+├── .claude/
+│   ├── HANDOFF_PROMPT.md      # Complete context for Claude Code
+│   ├── ROADMAP.md              # Development phases
+│   ├── ARCHITECTURE.md         # System design
+│   └── TASKS.md                # Current sprint
+│
 ├── apps/
-│   ├── web/           # React + TypeScript + Tailwind
-│   ├── mobile/        # React Native + Expo
-│   └── functions/     # Cloud Functions
+│   ├── web/                    # React + Vite + TypeScript (empty)
+│   ├── mobile/                 # React Native + Expo (empty)
+│   └── functions/              # Cloud Functions (empty)
+│
 ├── packages/
-│   ├── core/          # Types, validators
-│   ├── ui/            # Components
-│   └── data/          # Firestore hooks
-├── .claude/           # Guides for future development
-├── firestore.rules    # Security rules
-└── README.md          # Complete docs
+│   ├── types/                  # Generated TypeScript types
+│   └── shared/                 # Shared utilities (empty)
+│
+├── firestore.rules             # Generated & deployed
+├── firestore.indexes.json      # Generated & deployed
+├── .env.example                # Firebase config with API keys
+└── package.json                # Dependencies installed
 ```
+
+**✅ Generated = Ready to use**
+**Empty = Claude Code will build**
+
+---
+
+## What's Automated
+
+### Environment Setup (The Tool)
+- ✅ Complete project structure
+- ✅ Firebase project creation
+- ✅ Firebase Web App creation
+- ✅ **Firebase config auto-retrieval** (no manual copy/paste!)
+- ✅ Firestore security rules (generated & deployed)
+- ✅ TypeScript types for data models
+- ✅ Git + GitHub setup
+- ✅ All dependencies installed
+- ✅ Development roadmap
+
+### Feature Building (Claude Code)
+- ✅ React components
+- ✅ API endpoints
+- ✅ UI screens
+- ✅ Business logic
+- ✅ Tests
 
 ---
 
@@ -57,189 +124,110 @@ your-project/
 
 ### Simple Apps
 ```
-"Create a todo app with teams and projects"
-"Build a restaurant menu with QR code ordering"
-"Generate a real estate listing platform"
+"Create a task management app with teams and projects.
+Web and mobile. Google and email auth."
+
+"Build a restaurant menu system with QR code ordering.
+Web only. No auth needed initially."
+
+"Generate a real estate listing platform with property search.
+Web app. Email auth. Stripe for featured listings."
 ```
 
 ### Complex Platforms
 ```
 "Create an e-learning platform with:
  - Course creation and management
- - Video hosting and streaming
- - Student progress tracking
- - Quiz and certification system
- - Payment processing with Stripe"
+ - Video uploads to Firebase Storage
+ - Student progress tracking with real-time updates
+ - Quiz system with automatic grading
+ - Payment processing with Stripe
+ - Instructor and student portals
+ - Both web and mobile apps"
 ```
 
 ```
 "Build a healthcare telemedicine platform with:
- - Patient and doctor portals
+ - Patient and doctor portals (separate interfaces)
  - Video consultations via Twilio
- - Prescription management
- - Appointment scheduling
- - HIPAA-compliant security
- - Payment processing"
+ - Electronic prescription management
+ - Appointment scheduling with calendar sync
+ - HIPAA-compliant data storage
+ - Insurance claim tracking
+ - Multi-role access (doctor, nurse, admin, patient)"
 ```
 
 ---
 
-## No Setup Required
+## Key Differences from Other Tools
 
-- ❌ No Gemini API key needed
-- ❌ No separate CLI to run
-- ❌ No manual configuration
+### Traditional Firebase Setup
+1. Create Firebase project manually
+2. Set up authentication providers
+3. Create Firestore database
+4. Configure security rules manually
+5. Create web app and copy config
+6. Paste config into .env file
+7. Set up Git repository
+8. Install dependencies
+9. Write all your code manually
 
-Just Claude Code! ✅
+**Time: Hours**
 
----
+### Firebase Architect + Claude Code
+1. Describe your app
+2. Answer clarifying questions
+3. Everything sets up automatically
+4. Claude Code builds all features
 
-## What Claude Does For You
-
-### Requirement Analysis
-- Extracts data models from your description
-- Identifies user roles and permissions
-- Determines relationships between entities
-- Plans required Cloud Functions
-- Suggests external integrations
-
-### Code Generation
-- TypeScript types for all models
-- Zod validators for validation
-- Firestore CRUD hooks for every model
-- Security rules with role-based access
-- Cloud Function stubs
-- Complete UI scaffolding
-
-### Documentation
-- Architecture overview
-- API documentation
-- Deployment guides
-- Development task breakdown
-- Implementation guides
-
-### Ongoing Help
-- After generation, Claude continues helping
-- Uses `.claude/` directory for context
-- Implements features following your patterns
-- Maintains consistency
+**Time: Minutes**
 
 ---
 
-## After Generation
+## Prerequisites
 
-### Continue Development
-```
-You: "Implement the user authentication flow"
+**One-Time Setup:**
+```bash
+# Install Firebase CLI (required)
+npm install -g firebase-tools
+firebase login
 
-Claude: [Reads .claude/PROJECT_CONTEXT.md]
-        [Follows your architecture patterns]
-        [Generates complete auth implementation]
-```
+# Install GitHub CLI (optional)
+gh auth login
 
-### Add Features
-```
-You: "Add real-time notifications"
-
-Claude: [Uses Firebase Cloud Messaging]
-        [Follows your data model patterns]
-        [Implements notifications]
+# VS Code CLI (usually already installed)
+code --version
 ```
 
-### Get Explanations
-```
-You: "Explain how the security rules work"
-
-Claude: [Reads your generated firestore.rules]
-        [Explains the RBAC implementation]
-        [Shows examples]
-```
+**That's it!** No API keys, no Gemini, no complex setup.
 
 ---
 
-## Your Jet Charter Example
+## Next Steps
 
-Just paste your requirements:
-
-```
-Build a production-grade jet charter agent management platform with:
-
-User Roles:
-- Admin: Full system access, agent management, analytics
-- Agent: Manage own clients, create quotes, training
-- Master QA: QA oversight, review submissions
-
-Core Features:
-- Agent onboarding workflow
-- Training & certification system (LMS)
-- Quiz-based certification with passing scores
-- Agent CRM for managing clients
-- Client contact management
-- Quote pipeline (draft → sent → accepted/rejected)
-- Admin dashboard with real-time analytics
-- Broadcast messaging system
-- 1:1 agent-admin messaging
-
-Data Models:
-- User (with roles and certification status)
-- Client (linked to agents)
-- Quote (with status pipeline)
-- TrainingModule (with embedded quizzes)
-- Message (broadcast and direct)
-- Analytics (aggregated metrics)
-
-External Integrations:
-- Avinode API for charter quotes
-- Stellar API (alternative source)
-- Stripe for payments
-- Twilio for SMS notifications
-
-Technical Requirements:
-- Web admin dashboard
-- Mobile app for agents
-- Real-time updates where appropriate
-- Secure role-based access
-- Cloud Functions for background processing
-- Scheduled analytics aggregation
-- Push notifications
-```
-
-Claude will generate the complete platform!
+1. **Read:** [HOW_TO_USE_FIREBASE_ARCHITECT.md](../HOW_TO_USE_FIREBASE_ARCHITECT.md) - Complete guide
+2. **Try it:** Type `/new-firebase-app` in Claude Code
+3. **Learn:** Check [QUICKSTART.md](QUICKSTART.md) for examples
 
 ---
 
-## Tips for Best Results
+## Common Questions
 
-### Be Specific
-❌ "A blog"
-✅ "A blog with multi-author posts, scheduled publishing, comments, and SEO"
+**Q: Does this generate application code?**
+No. It only sets up the environment. Claude Code builds all the features.
 
-### Mention Roles
-❌ "User management"
-✅ "Three roles: admin (full access), editor (create/edit), viewer (read-only)"
+**Q: Do I need a Gemini API key?**
+No. Claude Code (me) handles all AI analysis.
 
-### State Integrations
-❌ "Payment processing"
-✅ "Stripe checkout with subscription billing"
+**Q: Do I still need to copy Firebase config manually?**
+No. The tool auto-fetches all Firebase config and saves to `.env.example`.
 
-### Describe Flows
-❌ "User system"
-✅ "User signs up → email verification → onboarding flow → dashboard"
+**Q: Can I use this without Claude Code?**
+Yes, but you'll need to write all application code yourself. See [QUICKSTART.md](QUICKSTART.md) for manual invocation.
 
----
-
-## That's It!
-
-No complex setup. No API keys. No manual work.
-
-**Just open in Claude Code and describe what you want to build.**
+**Q: What about authentication providers?**
+The tool doesn't configure auth providers (Google, GitHub, etc.). You do that in Firebase Console after setup.
 
 ---
 
-Ready? Open this folder in VS Code with Claude Code and say:
-
-```
-"Create a [your idea here]"
-```
-
-🚀
+**Ready?** Open Claude Code and type `/new-firebase-app` 🚀
