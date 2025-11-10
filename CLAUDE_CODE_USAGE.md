@@ -1,272 +1,288 @@
 # Using Firebase Architect with Claude Code
 
-This is the **easiest way** to generate your Firebase project. Just talk to Claude Code!
+This is the **recommended way** to set up your Firebase project environment.
+
+**Firebase Architect** sets up your environment → **Claude Code** builds your features
 
 ---
 
-## 🚀 Quick Start (The Claude Way)
+## 🚀 Quick Start
 
-### **Step 1: Open this repo in VS Code**
+### **Step 1: Open parent directory in VS Code**
 ```bash
-code /home/user/firebase-architect
+cd /home/user
+code .
 ```
 
-### **Step 2: Tell Claude Code what you want to build**
+### **Step 2: Invoke the setup wizard**
 
-Just say something like:
-
+Type the slash command:
 ```
-Hey Claude, I want to build a task management app with teams, projects,
-and real-time collaboration. Can you generate the Firebase project for me?
+/new-firebase-app
 ```
 
-or
-
+Or just describe what you want:
 ```
-Generate a Firebase project for a recipe sharing app where users can
-post recipes, rate them, and save favorites to collections.
+"Build me a task management app with teams, projects,
+and real-time collaboration. Web and mobile apps."
 ```
 
-### **Step 3: Claude does everything**
+### **Step 3: Describe your app**
 
-Claude Code will:
-1. ✅ Analyze your description with AI
-2. ✅ Extract data models, roles, features
-3. ✅ Generate the complete project structure
-4. ✅ Set up Firebase
-5. ✅ Deploy rules and indexes
-6. ✅ Create development roadmap
-7. ✅ Initialize git repository
-8. ✅ Open the new project in VS Code
+Claude Code will ask:
+```
+Tell me about your app - what are you building?
+```
+
+Give a detailed description:
+```
+"I'm building TaskMaster, a team task management platform where
+companies can create projects, assign tasks to team members, track
+progress with real-time updates, and view analytics dashboards.
+We need both web and mobile apps. Admins can manage everything,
+regular users only see their assigned tasks. Use Google and email
+authentication."
+```
+
+### **Step 4: Answer clarifying questions**
+
+Claude Code will only ask about missing details:
+```
+- Should tasks support comments or file attachments?
+- Any integrations needed (Stripe, SendGrid, etc.)?
+- Mobile: iOS, Android, or both?
+```
+
+### **Step 5: Environment setup (automatic)**
+
+Firebase Architect runs and sets up:
+```
+📁 Phase 1: Generating project structure...
+✅ Monorepo created (web + mobile + functions)
+✅ Claude Code context files generated
+✅ Firestore security rules generated
+✅ TypeScript types generated
+
+🔥 Phase 2: Setting up Firebase...
+✅ Firebase project created
+✅ Firebase Web App created
+✅ Firebase config saved to .env.example
+
+📦 Phase 3: Installing dependencies...
+✅ All dependencies installed
+
+🚀 Phase 4: Deploying Firebase resources...
+✅ Firestore rules deployed
+✅ Firestore indexes deployed
+
+📦 Phase 5: Setting up version control...
+✅ Git repository initialized
+✅ GitHub repository created
+
+🎉 Setup Complete!
+```
+
+### **Step 6: Claude Code starts building**
+
+Claude reads the handoff prompt and begins feature development:
+```
+I've reviewed your project setup. Environment is fully configured!
+
+Starting Phase 1: Authentication System
+
+Creating:
+- Auth context provider
+- Login/signup forms
+- Protected route wrapper
+- User profile components
+
+[Claude builds all the features...]
+```
 
 ---
 
-## 💬 Example Conversation
+## 💬 Example Conversations
+
+### **Example 1: E-commerce Platform**
 
 **You:**
-> Create a Firebase project for a fitness tracking app. Users should be able to log workouts, track progress over time, set goals, and share achievements with friends. I need both web and mobile apps.
-
-**Claude Code:**
-> Great! I'll create a fitness tracking app for you. Let me analyze the requirements and generate the project...
->
-> [Generates complete project with workout tracking, progress analytics, social features, etc.]
->
-> ✅ Done! I've created your project at `/path/to/fitness-tracker`
->
-> Here's what I generated:
-> - Data models: User, Workout, Goal, Achievement, Friend
-> - Web app with React + Vite
-> - Mobile app with React Native + Expo
-> - Cloud Functions for analytics and notifications
-> - Complete development roadmap
->
-> Would you like me to open it and start implementing the first features?
-
----
-
-## 🎯 What You Can Ask For
-
-### **Simple Apps**
 ```
-"Build a blog with posts, comments, and categories"
+/new-firebase-app
 ```
 
-### **Complex Platforms**
+**Claude:**
 ```
-"Create a project management system with:
-- Team workspaces
-- Projects and tasks with assignments
-- Time tracking
-- File attachments
-- Real-time collaboration
-- Admin dashboard with analytics
-- Integrations with Slack and Google Calendar"
+Tell me about your app - what are you building?
 ```
 
-### **Specific Requirements**
+**You:**
 ```
-"Generate a healthcare appointment scheduling system with:
-- Patient and doctor roles
-- Appointment booking with availability checking
-- Email and SMS reminders
-- Medical records storage
-- HIPAA-compliant security rules"
-```
-
----
-
-## 📋 What Claude Needs to Know
-
-To generate the best project, mention:
-
-✅ **What kind of app** - task manager, social network, e-commerce, etc.
-✅ **Key features** - what can users do?
-✅ **User types** - admin, user, manager, etc. (optional)
-✅ **Platforms** - web, mobile, or both
-✅ **Integrations** - Stripe, SendGrid, Twilio, etc. (optional)
-
----
-
-## 🛠️ Behind the Scenes
-
-When you ask Claude Code to generate a project, it:
-
-1. **Analyzes** your description using Google Gemini AI
-2. **Extracts**:
-   - Data models and relationships
-   - User roles and permissions
-   - Required Cloud Functions
-   - External integrations
-   - Security requirements
-3. **Generates**:
-   - Complete monorepo structure
-   - TypeScript types and validators
-   - React web app
-   - React Native mobile app
-   - Cloud Functions stubs
-   - Firestore security rules
-   - Development roadmap
-4. **Sets up**:
-   - Firebase project
-   - Git repository
-   - Dependencies
-   - Deployment configuration
-
----
-
-## ✨ Why This is Better
-
-**Instead of:**
-```bash
-node index.js
-# Answer multiple prompts
-# Paste requirements
-# Name project
-# Wait...
-```
-
-**Just do:**
-```
-"Claude, build me a [description] app"
-```
-
-**And you're done!** 🎉
-
----
-
-## 🔧 Requirements
-
-Before asking Claude to generate a project, make sure you have:
-
-1. **Firebase CLI** installed and authenticated
-   ```bash
-   npm install -g firebase-tools
-   firebase login
-   ```
-
-2. **Gemini API Key** set
-   ```bash
-   export GEMINI_API_KEY=your_api_key
-   ```
-
-3. **Optional: GitHub CLI** (for automatic repo creation)
-   ```bash
-   brew install gh
-   gh auth login
-   ```
-
----
-
-## 📝 Example Prompts
-
-Copy and paste these to try:
-
-### **Simple Todo App**
-```
-Create a Firebase project for a simple todo app with
-task lists and categories. Web only.
-```
-
-### **Social Platform**
-```
-Build a social networking app where users can:
-- Create profiles
-- Post updates with images
-- Follow other users
-- Like and comment on posts
-- Receive notifications
-Need both web and mobile.
-```
-
-### **E-commerce Store**
-```
-Generate an e-commerce platform with:
-- Product catalog with categories
-- Shopping cart
-- Order management
-- Stripe payment integration
+I'm building an e-commerce platform with:
+- Product catalog with categories and search
+- Shopping cart and checkout
+- Order management and tracking
 - Admin dashboard for inventory
-- Customer and admin roles
+- Customer reviews and ratings
+- Stripe payment integration
+- Both web and mobile apps
 ```
 
-### **SaaS Application**
+**Claude:**
 ```
-Create a SaaS project management tool with:
-- Multi-tenant workspaces
-- Projects, tasks, and subtasks
-- Team collaboration with comments
-- File uploads to Cloud Storage
-- Time tracking
-- Analytics dashboard
-- Slack integration for notifications
-- Owner, admin, and member roles
+Great! A few clarifying questions:
+
+- Should vendors be able to add their own products (marketplace style)?
+- Do you need real-time inventory updates?
+- Email notifications for orders via SendGrid?
+```
+
+**You:**
+```
+Yes to all three!
+```
+
+**Claude:**
+```
+Perfect! Setting up your environment...
+
+[Runs firebase-architect]
+
+✅ Environment ready at /home/user/ecommerce-platform/
+
+I've set up:
+- Data Models: Product, Order, Cart, Review, Vendor, Customer
+- User Roles: Admin, Vendor, Customer
+- Integrations: Stripe, SendGrid
+- Firestore security rules for marketplace
+
+Now building the product catalog...
 ```
 
 ---
 
-## 💡 Pro Tips
+### **Example 2: Healthcare Portal**
 
-1. **Be specific** - More detail = better architecture
-2. **Mention integrations** - Claude will stub them out for you
-3. **Specify roles** - Gets better security rules
-4. **Ask questions** - Claude can refine the architecture with you
+**You:**
+```
+Build me a telemedicine platform with patient and doctor portals,
+video consultations, prescription management, and appointment scheduling.
+Web app only. HIPAA-compliant security.
+```
+
+**Claude:**
+```
+I'll create a telemedicine platform. A few questions:
+
+- Video consultations via Twilio or another service?
+- Should prescriptions integrate with pharmacies?
+- Insurance claim tracking needed?
+```
+
+**You:**
+```
+Use Twilio. No pharmacy integration yet. Yes to insurance tracking.
+```
+
+**Claude:**
+```
+Setting up your healthcare platform...
+
+[Runs firebase-architect]
+
+✅ Environment ready at /home/user/telemedicine-portal/
+
+I've configured:
+- Data Models: Patient, Doctor, Appointment, Prescription, InsuranceClaim
+- User Roles: Doctor, Nurse, Patient, Admin
+- Integrations: Twilio (video), SendGrid (notifications)
+- HIPAA-compliant Firestore security rules
+- Audit logging for all data access
+
+Now building the patient portal...
+```
 
 ---
 
-## 🎯 Next Steps After Generation
+## 🎯 What Gets Automated
 
-Once Claude generates your project:
+### Environment Setup (Firebase Architect)
+- ✅ Project folder structure
+- ✅ Firebase project creation
+- ✅ Firebase Web App creation
+- ✅ **Firebase config auto-fetched** (no copy/paste!)
+- ✅ Firestore security rules (generated & deployed)
+- ✅ TypeScript types for data models
+- ✅ Git + GitHub repository
+- ✅ All dependencies installed
+- ✅ Development roadmap
 
-1. **Review the roadmap**
-   ```
-   "Show me the development roadmap"
-   ```
+### Feature Development (Claude Code)
+- ✅ React components
+- ✅ API endpoints
+- ✅ Cloud Functions
+- ✅ UI screens
+- ✅ Business logic
+- ✅ Tests
 
-2. **Start implementing**
-   ```
-   "Implement the first Cloud Function from the roadmap"
-   ```
-
-3. **Build features**
-   ```
-   "Add the user dashboard with real-time updates"
-   ```
-
-4. **Deploy**
-   ```
-   "Deploy the app to Firebase"
-   ```
+**Result: You describe what you want, everything gets built!**
 
 ---
 
-## 🚀 Ready?
+## 📋 What Claude Code Can Do After Setup
 
-Just tell Claude Code what you want to build!
+Once the environment is ready, Claude Code can:
 
-Example:
-```
-"Hey Claude, I want to build a [YOUR APP IDEA HERE].
-Can you generate the Firebase project?"
-```
+1. **Read the handoff prompt** - Complete context about your app
+2. **Follow the roadmap** - Phase-by-phase development plan
+3. **Build features** - Implement according to architecture
+4. **Adapt to feedback** - "Actually, use Zustand instead of Context API"
+5. **Fix bugs** - Debug and resolve issues
+6. **Add tests** - Write unit and integration tests
+7. **Optimize** - Improve performance and code quality
 
-That's it! 🎉
+---
+
+## 🔑 Key Advantages
+
+### vs. Manual Setup
+- ❌ Manual: 2-3 hours of setup before coding
+- ✅ Claude: 2 minutes setup, immediate development
+
+### vs. Templates
+- ❌ Templates: Rigid structure, outdated dependencies
+- ✅ Claude: Custom architecture, latest best practices
+
+### vs. Code Generators
+- ❌ Generators: Generic boilerplate, modify everything
+- ✅ Claude: Tailored to your exact requirements
+
+---
+
+## 📖 Additional Resources
+
+- **[HOW_TO_USE_FIREBASE_ARCHITECT.md](../HOW_TO_USE_FIREBASE_ARCHITECT.md)** - Complete guide
+- **[QUICKSTART.md](QUICKSTART.md)** - Quick reference
+- **[START_HERE.md](START_HERE.md)** - Getting started
+
+---
+
+## ❓ Common Questions
+
+**Q: Does Claude Code generate all the application code?**
+Yes! After Firebase Architect sets up the environment, Claude Code builds all your features.
+
+**Q: Can I customize the generated code?**
+Absolutely! Just tell Claude what changes you want, and it will adapt.
+
+**Q: What if I need to add a feature later?**
+Just describe the new feature to Claude, and it will implement it.
+
+**Q: Do I need any API keys?**
+No Gemini API key needed. Just Firebase CLI (for setup) and gh CLI (optional, for GitHub).
+
+**Q: Can I use this for existing projects?**
+This is for new projects only. It creates the complete structure from scratch.
+
+---
+
+**Ready to build?** Open Claude Code and type `/new-firebase-app` 🚀
