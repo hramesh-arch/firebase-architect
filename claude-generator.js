@@ -42,6 +42,9 @@ const __dirname = path.dirname(__filename);
  * @param {boolean} architecture.github.createIssues - Create issues from roadmap (default: false)
  * @param {Object} architecture.vscode - VS Code configuration (optional)
  * @param {boolean} architecture.vscode.open - Open in VS Code (default: true)
+ * @param {Object} architecture.uiTemplate - UI Template configuration (optional)
+ * @param {string} architecture.uiTemplate.templateId - Template ID (material-modern, ant-design-pro, etc.)
+ * @param {Object} architecture.uiTemplate.customization - Color/font customization
  */
 export async function generateProject(architecture) {
   const startTime = Date.now();
@@ -67,6 +70,7 @@ export async function generateProject(architecture) {
   const { generateTypes } = await import('./generators/types.js');
   const { generateDocs } = await import('./generators/docs.js');
   const { generateDevelopmentRoadmap } = await import('./generators/roadmap.js');
+  const { generateUITemplate, displayTemplateInfo } = await import('./generators/ui-template-generator.js');
   const { setupFirebaseProject } = await import('./generators/firebase-setup.js');
   const { installDependencies, deployFirebaseResources } = await import('./generators/deployment.js');
   const { initializeGit, promptGitHubSetup, createGitHubRepository, pushToRemote, createGitHubIssuesFromRoadmap } = await import('./generators/git-setup.js');
@@ -98,6 +102,16 @@ export async function generateProject(architecture) {
 
     await generateDocs(architecture, projectPath);
     await generateDevelopmentRoadmap(architecture, projectPath);
+
+    // Generate UI Template (if specified)
+    let templateInfo = null;
+    if (architecture.uiTemplate) {
+      templateInfo = await generateUITemplate(architecture, projectPath);
+      if (templateInfo) {
+        displayTemplateInfo(templateInfo);
+        stats.uiTemplate = templateInfo.templateName;
+      }
+    }
 
     console.log('✅ Project structure created\n');
 
@@ -201,6 +215,7 @@ export async function generateProject(architecture) {
     return {
       projectPath,
       stats,
+      uiTemplate: templateInfo,
       handoffPrompt: path.join(projectPath, '.claude', 'HANDOFF_PROMPT.md'),
       roadmap: path.join(projectPath, '.claude', 'ROADMAP.md')
     };
