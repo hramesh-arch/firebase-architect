@@ -318,33 +318,33 @@ export const UI_TEMPLATES = {
     }
   },
 
-  // Template 6: Med Refills Healthcare
-  'med-refills-healthcare': {
-    id: 'med-refills-healthcare',
-    name: 'Med Refills Healthcare',
-    description: 'Clean, accessible design optimized for healthcare applications. HIPAA-compliant UI patterns.',
-    framework: 'Custom Healthcare UI',
-    category: 'healthcare',
+  // Template 6: Clean Accessible
+  'clean-accessible': {
+    id: 'clean-accessible',
+    name: 'Clean Accessible',
+    description: 'Beautiful, highly accessible design inspired by Med Refills app. WCAG AAA compliant with excellent readability and user experience. Perfect for any professional application.',
+    framework: 'React + Material-UI',
+    category: 'professional',
     preview: {
-      thumbnail: '/templates/med-refills/thumbnail.png',
+      thumbnail: '/templates/clean-accessible/thumbnail.png',
       screenshots: [
-        '/templates/med-refills/dashboard.png',
-        '/templates/med-refills/prescriptions.png',
-        '/templates/med-refills/refills.png'
+        '/templates/clean-accessible/dashboard.png',
+        '/templates/clean-accessible/list-view.png',
+        '/templates/clean-accessible/detail-view.png'
       ],
-      liveDemo: 'https://example.com/med-refills-demo'
+      liveDemo: 'https://example.com/clean-accessible-demo'
     },
     defaultConfig: {
       colors: {
-        primary: '#0066cc', // Medical blue
-        secondary: '#00a86b', // Medical green
+        primary: '#0066cc', // Professional blue
+        secondary: '#00a86b', // Success green
         success: '#28a745',
         warning: '#ffc107',
         error: '#dc3545',
         info: '#17a2b8',
         background: '#f8f9fa',
         surface: '#ffffff',
-        accent: '#6c63ff', // Prescription purple
+        accent: '#6c63ff', // Accent purple
         text: {
           primary: '#212529',
           secondary: '#6c757d'
@@ -352,12 +352,12 @@ export const UI_TEMPLATES = {
       },
       typography: {
         fontFamily: "'Open Sans', 'Helvetica Neue', Arial, sans-serif",
-        fontSize: 16, // Larger for readability
+        fontSize: 16, // Excellent readability
         fontWeightLight: 300,
         fontWeightRegular: 400,
         fontWeightMedium: 600,
         fontWeightBold: 700,
-        lineHeight: 1.6 // Increased for accessibility
+        lineHeight: 1.6 // Comfortable reading
       },
       spacing: 16,
       borderRadius: 8,
@@ -369,40 +369,43 @@ export const UI_TEMPLATES = {
       }
     },
     components: [
-      'PrescriptionCard', 'RefillButton', 'MedicationList', 'DosageSchedule',
-      'PharmacyLocator', 'InsuranceCard', 'PatientProfile', 'AppointmentCard',
-      'AlertBanner', 'StatusBadge', 'TimelineView', 'ScanPrescription',
-      'AutoRefillToggle', 'DoctorContact', 'MedicationReminder'
+      'Card', 'Button', 'Input', 'Select', 'DataTable', 'SearchBar',
+      'FilterPanel', 'ActionMenu', 'StatusBadge', 'Timeline', 'ProfileCard',
+      'DetailView', 'ListView', 'Form', 'Modal', 'Notification', 'Tabs',
+      'Breadcrumbs', 'Pagination', 'FileUpload', 'DatePicker', 'AlertBanner'
     ],
     layouts: [
-      'patient-dashboard',
-      'prescriptions-list',
-      'refill-request',
-      'medication-details',
-      'pharmacy-selection',
-      'insurance-info',
-      'appointment-booking'
+      'dashboard',
+      'list-with-filters',
+      'detail-view',
+      'profile',
+      'settings',
+      'wizard',
+      'search-results'
     ],
     dependencies: {
       '@mui/material': '^5.15.0',
       '@mui/icons-material': '^5.15.0',
-      'react-qr-reader': '^3.0.0-beta-1', // For prescription scanning
       'date-fns': '^2.30.0',
       'react-hook-form': '^7.49.0',
-      'zod': '^3.22.0'
+      'zod': '^3.22.0',
+      'framer-motion': '^10.16.0',
+      '@tanstack/react-query': '^5.0.0'
     },
     assets: {
       fonts: ['Open Sans'],
-      icons: 'material-icons + custom-medical-icons',
-      illustrations: ['prescription-bottle', 'pharmacy', 'doctor', 'calendar']
+      icons: 'material-icons',
+      illustrations: ['dashboard', 'profile', 'search', 'success']
     },
     specialFeatures: {
-      prescriptionScanning: true,
-      autoRefillReminders: true,
-      insuranceIntegration: true,
-      hipaaCompliant: true,
-      accessibilityAAA: true,
-      offlineMode: true
+      wcagAAACompliant: true,
+      highContrast: true,
+      keyboardNavigation: true,
+      screenReaderOptimized: true,
+      responsiveDesign: true,
+      darkModeSupport: true,
+      smoothAnimations: true,
+      excellentReadability: true
     }
   }
 };
