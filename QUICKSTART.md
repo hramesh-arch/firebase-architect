@@ -1,220 +1,337 @@
 # Quick Start Guide
 
-Get from idea to working Firebase app in 5 minutes!
+Get from zero to fully-configured Firebase project in minutes!
 
-## Prerequisites (2 minutes)
+## What This Tool Does
 
-```bash
-# 1. Install Firebase CLI
-npm install -g firebase-tools
+Firebase Architect sets up your **complete development environment** - but does NOT generate application code. After setup, Claude Code builds all your features.
 
-# 2. Login to Firebase
-firebase login
-
-# 3. Get Gemini API key (for AI features)
-# Visit: https://makersuite.google.com/app/apikey
-export GEMINI_API_KEY=your_key_here
-```
-
-## Run Firebase Architect (30 seconds)
-
-```bash
-cd /Users/harshithramesh/Builds/firebase-architect
-npm install
-node index.js
-```
-
-## Example Session (2 minutes)
-
-### Option 1: AI-Guided (Recommended for first time)
-
-```
-🤖 AI Architect Mode
-
-? What are you building?
-> A task management app with teams, projects, and real-time collaboration
-
-[AI analyzes...]
-
-📐 Proposed Architecture
-Type: monorepo
-Platforms: web, mobile, functions
-
-Data Models:
-  - Team
-  - Project
-  - Task
-  - User
-
-Firebase Services:
-  - Auth, Firestore, Functions
-
-? Proceed with this architecture? Yes
-
-? Project name: task-manager
-? Create new Firebase project? Yes
-
-[Generating...]
-
-✅ Setup complete!
-
-Next steps:
-1. cd task-manager
-2. Review ARCHITECTURE.md
-3. Check .claude/ directory
-4. npm run dev:web
-```
-
-### Option 2: Custom Prompt (Your Jet Charter Example)
-
-```
-✨ Custom Prompt Mode
-
-[Paste your jet charter requirements]
-
-[AI analyzes...]
-
-📐 Proposed Architecture
-... [shows complete architecture]
-
-? Generate project? Yes
-
-✅ Project created!
-```
-
-## What Happens Next (1 minute)
-
-Your generated project includes:
-
-```
-task-manager/
-├── apps/web/          # Ready to run: npm run dev:web
-├── apps/mobile/       # Ready to run: npm run dev:mobile
-├── apps/functions/    # Ready to deploy
-├── packages/          # Shared code
-└── .claude/           # Claude Code guides
-```
-
-## Run Your App
-
-```bash
-cd task-manager
-
-# Configure Firebase
-# 1. Get config from https://console.firebase.google.com
-# 2. Update apps/web/.env
-# 3. Update apps/mobile/.env
-
-# Start development
-npm run dev:web      # http://localhost:3000
-```
-
-## Use Claude Code (Recommended)
-
-Open your project in VS Code with Claude Code:
-
-```bash
-cd task-manager
-code .
-```
-
-Claude Code will see the `.claude/` directory and offer:
-- Project context and architecture
-- Implementation guides
-- Task breakdown
-- Code generation prompts
-
-Ask Claude:
-- "Help me implement user authentication"
-- "Add a new data model for Comments"
-- "Create a CRUD component for Tasks"
-
-## Deploy (When Ready)
-
-```bash
-# Deploy to Firebase
-firebase deploy
-
-# Your app is live at:
-# https://YOUR_PROJECT.web.app
-```
-
-## Example Projects
-
-Try these prompts with Firebase Architect:
-
-### 1. E-commerce Platform
-```
-A multi-vendor e-commerce platform with:
-- Vendor dashboards
-- Product catalog with categories
-- Shopping cart and checkout
-- Order management
-- Payment processing (Stripe)
-- Admin analytics
-```
-
-### 2. Healthcare Portal
-```
-A patient management system with:
-- Patient records
-- Appointment scheduling
-- Telemedicine (video calls)
-- Prescription management
-- HIPAA-compliant security
-- Multi-role access (doctor, nurse, admin)
-```
-
-### 3. Social Network
-```
-A social platform with:
-- User profiles and connections
-- Posts and comments
-- Real-time messaging
-- Notifications
-- Media uploads
-- Content moderation
-```
-
-## Tips
-
-1. **Be Specific**: More detail = better architecture
-2. **Mention Roles**: "admin, user, moderator" helps with security rules
-3. **List Integrations**: "Stripe, Twilio, SendGrid" generates stubs
-4. **Describe Flows**: "user signs up → onboarding → dashboard"
-
-## Troubleshooting
-
-**"Gemini API key required"**
-```bash
-export GEMINI_API_KEY=your_key_here
-```
-
-**"Firebase CLI not found"**
-```bash
-npm install -g firebase-tools
-```
-
-**"Not logged into Firebase"**
-```bash
-firebase login
-```
-
-## Next Steps
-
-After generation:
-1. ✅ Review ARCHITECTURE.md
-2. ✅ Check .claude/TASKS.md for development plan
-3. ✅ Read .claude/guides/ for how-tos
-4. ✅ Use .claude/prompts/ with Claude Code
-5. ✅ Start building!
-
-## Get Help
-
-- Check `.claude/guides/` in your generated project
-- Read the main [README.md](README.md)
-- Review [ARCHITECTURE.md](docs/ARCHITECTURE.md) (in generated project)
+**Tool handles:** Project structure, Firebase setup, Git/GitHub, dependencies, roadmap
+**Claude Code handles:** React components, API endpoints, UI screens, business logic
 
 ---
 
-**You're ready!** Run `node index.js` and build something amazing.
+## Prerequisites (One-Time Setup)
+
+```bash
+# 1. Install Firebase CLI (required)
+npm install -g firebase-tools
+
+# 2. Login to Firebase (required)
+firebase login
+
+# 3. Install GitHub CLI (optional but recommended)
+# Mac: brew install gh
+# Other: https://cli.github.com/
+gh auth login
+
+# 4. Verify VS Code CLI (should already work)
+code --version
+```
+
+**That's it!** No Gemini API key needed. Claude Code handles all AI analysis.
+
+---
+
+## Using with Claude Code (Recommended)
+
+### Method 1: Slash Command
+
+1. **Start Claude Code from parent directory:**
+   ```bash
+   cd /home/user  # Parent of firebase-architect
+   code .
+   ```
+
+2. **In Claude Code, type:**
+   ```
+   /new-firebase-app
+   ```
+
+3. **Answer questions about your app:**
+   - Project name and description
+   - Platforms (web, mobile, or both)
+   - Key features
+   - User roles
+   - Auth providers
+   - Integrations
+
+4. **Tool runs automatically** and sets up everything
+
+5. **Claude Code starts building** your features
+
+---
+
+### Method 2: Natural Language
+
+Just describe what you want:
+
+```
+"Build me a Firebase task management app with teams, projects,
+real-time collaboration, and mobile support"
+```
+
+Claude Code will:
+1. Ask clarifying questions
+2. Build architecture object
+3. Run firebase-architect tool
+4. Set up complete environment
+5. Start building features from the roadmap
+
+---
+
+## What Gets Created
+
+After running, you'll have:
+
+```
+your-app-name/
+├── .claude/
+│   ├── HANDOFF_PROMPT.md      ← Start here!
+│   ├── ROADMAP.md              ← Development plan
+│   ├── ARCHITECTURE.md         ← System design
+│   └── TASKS.md                ← Current sprint
+│
+├── apps/
+│   ├── web/                    ← React + Vite (empty, ready for code)
+│   ├── mobile/                 ← React Native + Expo (empty)
+│   └── functions/              ← Cloud Functions (empty)
+│
+├── packages/
+│   ├── types/                  ← TypeScript types (generated)
+│   └── shared/                 ← Shared utilities (empty)
+│
+├── firestore.rules             ← Security rules (generated & deployed)
+├── firestore.indexes.json      ← Indexes (generated & deployed)
+├── firebase.json               ← Firebase config (generated)
+├── .firebaserc                 ← Active project (generated)
+├── .env.example                ← Firebase config with API keys (generated)
+└── package.json                ← Dependencies (installed)
+```
+
+**✅ = Generated by tool**
+**Empty = Ready for Claude Code to build**
+
+---
+
+## What's Automated
+
+### Fully Automated (Zero Manual Steps)
+- ✅ Complete project structure
+- ✅ Firebase project creation
+- ✅ Firebase Web App creation
+- ✅ **Firebase config retrieval** (API keys, etc.)
+- ✅ Firestore security rules deployment
+- ✅ Git initialization + first commit
+- ✅ GitHub repository creation (with labels!)
+- ✅ Dependency installation
+- ✅ Development roadmap generation
+- ✅ VS Code auto-opening
+
+### One Simple Step
+- Copy `.env.example` to `.env`:
+  ```bash
+  cp .env.example .env
+  ```
+
+### Manual (If Needed)
+- Configure auth providers in Firebase Console
+- Add third-party API keys (Stripe, SendGrid, etc.)
+
+**Result: ~95% automated!**
+
+---
+
+## Example Session
+
+```
+You: /new-firebase-app
+
+Claude: I'll help you create a new Firebase application!
+What should we call this project and what does it do?
+
+You: "TaskMaster - a team task management app with projects and assignments"
+
+Claude: Great! A few more questions:
+- Platforms: Web only, mobile only, or both?
+- User roles: Any different types like admin vs regular user?
+- Auth: How should users sign in (Google, Email, etc.)?
+
+You: Both web and mobile. Yes, admins and regular users.
+     Google and Email auth.
+
+Claude: Perfect! Setting up your environment...
+
+📁 Phase 1: Generating project structure...
+✅ Project structure created
+
+🔥 Phase 2: Setting up Firebase...
+✅ Firebase project created: taskmaster-abc123
+✅ Firebase Web App created
+✅ Firebase config saved to .env.example
+
+📦 Phase 3: Installing dependencies...
+✅ Dependencies installed
+
+🚀 Phase 4: Deploying Firebase resources...
+✅ Firestore rules deployed
+✅ Firestore indexes deployed
+
+📦 Phase 5: Setting up version control...
+✅ Git repository initialized
+✅ GitHub repository created: https://github.com/you/taskmaster
+✅ GitHub labels created
+
+🎉 Setup Complete!
+
+Project created at: /home/user/taskmaster
+Setup time: 45s
+
+Now reading the handoff prompt and starting development...
+
+Claude: I've reviewed your project setup. Everything is ready!
+Let me start building the authentication system...
+```
+
+---
+
+## Next Steps After Setup
+
+Once the tool finishes:
+
+1. **Review the handoff prompt:**
+   ```bash
+   # Already open if VS Code auto-opened
+   # Or manually:
+   cat .claude/HANDOFF_PROMPT.md
+   ```
+
+2. **Copy environment file:**
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Start dev servers:**
+   ```bash
+   npm run dev:web      # Web app: http://localhost:5173
+   npm run dev:mobile   # Mobile app with Expo
+   ```
+
+4. **Let Claude Code build features:**
+   - Read `.claude/ROADMAP.md` for the plan
+   - Claude implements features step by step
+   - Mark tasks complete as you go
+
+---
+
+## Manual Invocation (Without Claude Code)
+
+If you want to run the tool directly:
+
+```bash
+cd /home/user/firebase-architect
+
+# Create architecture JSON
+cat > /tmp/arch.json <<'EOF'
+{
+  "projectName": "my-app",
+  "displayName": "My App",
+  "description": "My awesome Firebase app",
+  "projectType": "monorepo",
+  "platforms": ["web", "mobile"],
+  "features": ["auth", "realtime"],
+  "userRoles": [
+    {"role": "admin", "permissions": ["*"], "description": "Administrator"},
+    {"role": "user", "permissions": ["read", "write"], "description": "Regular user"}
+  ],
+  "dataModels": [
+    {
+      "name": "Task",
+      "fields": [
+        {"name": "title", "type": "string", "required": true},
+        {"name": "completed", "type": "boolean", "required": true}
+      ]
+    }
+  ],
+  "firebaseServices": ["auth", "firestore"],
+  "firebase": {"create": true},
+  "github": {"create": true, "visibility": "private"},
+  "vscode": {"open": true}
+}
+EOF
+
+# Run the generator
+node run-generator.js "$(cat /tmp/arch.json)"
+```
+
+But honestly, **just use Claude Code** - it's way easier!
+
+---
+
+## Troubleshooting
+
+### "Firebase CLI not found"
+```bash
+npm install -g firebase-tools
+firebase login
+```
+
+### "Not logged into Firebase"
+```bash
+firebase login
+```
+
+### "gh CLI not found" (Optional)
+GitHub repo creation will be skipped. Install if you want automatic GitHub setup:
+```bash
+# Mac
+brew install gh
+gh auth login
+
+# Other platforms
+# Visit: https://cli.github.com/
+```
+
+### "VS Code CLI not found" (Optional)
+Project won't auto-open. Just open manually:
+```bash
+cd your-project
+code .
+```
+
+### "Firebase project creation failed"
+The tool will show manual steps:
+1. Go to console.firebase.google.com
+2. Click "Add project"
+3. Follow prompts
+Tool continues automatically after that.
+
+---
+
+## Complete Documentation
+
+For the full guide, see:
+- **[HOW_TO_USE_FIREBASE_ARCHITECT.md](../HOW_TO_USE_FIREBASE_ARCHITECT.md)** - Complete guide with examples
+- **[README.md](README.md)** - Overview and features
+- **[.claude/context.md](../.claude/context.md)** - How Claude Code uses the tool
+
+---
+
+## Key Differences from Old Version
+
+**OLD (v2):**
+- ❌ Required Gemini API key
+- ❌ Generated application code (React components, etc.)
+- ❌ Manual Firebase config copy/paste
+- ❌ Template-based (rigid)
+
+**NEW (v3):**
+- ✅ No API keys needed
+- ✅ Only generates environment setup
+- ✅ Auto-fetches Firebase config
+- ✅ Claude Code builds custom features
+- ✅ Maximum automation (~95%)
+
+---
+
+**Ready to start?** Open Claude Code and type `/new-firebase-app` 🚀
