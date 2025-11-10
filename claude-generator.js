@@ -24,7 +24,7 @@ const __dirname = path.dirname(__filename);
  * @param {string} architecture.displayName - Display name
  * @param {string} architecture.description - Project description
  * @param {string} architecture.projectType - spa|fullstack-web|monorepo|mobile
- * @param {string} architecture.targetDirectory - Where to create project (optional, defaults to /Builds)
+ * @param {string} architecture.targetDirectory - Where to create project (optional, defaults to parent dir)
  * @param {Array} architecture.platforms - ['web', 'mobile', 'functions']
  * @param {Array} architecture.features - List of features
  * @param {Array} architecture.userRoles - [{ role, permissions, description }]
@@ -33,15 +33,21 @@ const __dirname = path.dirname(__filename);
  * @param {Array} architecture.cloudFunctions - [{ name, type, description }]
  * @param {Array} architecture.integrations - [{ name, purpose }]
  * @param {Object} architecture.recommendedStack - { web, mobile, functions }
- * @param {Object} architecture.git - Git configuration (optional)
- * @param {boolean} architecture.git.init - Initialize git repo
- * @param {boolean} architecture.git.initialCommit - Create initial commit
- * @param {string} architecture.git.remote - Remote repository URL
- * @param {boolean} architecture.git.push - Push to remote after commit
+ * @param {Object} architecture.firebase - Firebase configuration (optional)
+ * @param {boolean} architecture.firebase.create - Create Firebase project (default: true)
+ * @param {string} architecture.firebase.projectId - Firebase project ID (defaults to projectName)
+ * @param {Object} architecture.github - GitHub configuration (optional)
+ * @param {boolean} architecture.github.create - Create GitHub repo (default: true)
+ * @param {string} architecture.github.visibility - 'public' or 'private' (default: 'private')
+ * @param {boolean} architecture.github.createIssues - Create issues from roadmap (default: false)
+ * @param {Object} architecture.vscode - VS Code configuration (optional)
+ * @param {boolean} architecture.vscode.open - Open in VS Code (default: true)
  */
 export async function generateProject(architecture) {
-  // Default to /Users/harshithramesh/Builds if not specified
-  const baseDir = architecture.targetDirectory || '/Users/harshithramesh/Builds';
+  const startTime = Date.now();
+
+  // Default to parent directory of firebase-architect
+  const baseDir = architecture.targetDirectory || path.resolve(__dirname, '..');
   const projectPath = path.join(baseDir, architecture.projectName);
 
   // Ensure project doesn't exist
@@ -49,109 +55,161 @@ export async function generateProject(architecture) {
     throw new Error(`Directory ${architecture.projectName} already exists!`);
   }
 
-  console.log(`\n🏗️  Generating ${architecture.projectName}...\n`);
+  console.log(`\n🏗️  Setting up ${architecture.projectName}...\n`);
 
   // Create project directory
   fs.mkdirSync(projectPath, { recursive: true });
-  process.chdir(projectPath);
 
-  // Import generator modules
+  // Import all generator modules
   const { generateMonorepo } = await import('./generators/monorepo.js');
   const { generateClaudeContext } = await import('./generators/claude-context.js');
   const { generateSecurityRules } = await import('./generators/security-rules.js');
   const { generateTypes } = await import('./generators/types.js');
   const { generateDocs } = await import('./generators/docs.js');
   const { generateDevelopmentRoadmap } = await import('./generators/roadmap.js');
+  const { setupFirebaseProject } = await import('./generators/firebase-setup.js');
+  const { installDependencies, deployFirebaseResources } = await import('./generators/deployment.js');
+  const { initializeGit, promptGitHubSetup, createGitHubRepository, pushToRemote, createGitHubIssuesFromRoadmap } = await import('./generators/git-setup.js');
+  const { openInVSCode, displayNextSteps, displaySetupSummary } = await import('./generators/vscode-setup.js');
 
-  // Generate based on project type
-  if (architecture.projectType === 'monorepo' || architecture.platforms?.length > 1) {
+  const stats = {
+    filesCreated: 0,
+    dependenciesInstalled: null,
+    firebaseProject: null,
+    githubRepo: null,
+    roadmapTasks: null
+  };
+
+  // Change to project directory for all operations
+  const originalDir = process.cwd();
+  process.chdir(projectPath);
+
+  try {
+    // PHASE 1: Generate Project Structure
+    console.log('📁 Phase 1: Generating project structure...\n');
+
     await generateMonorepo(architecture);
-  } else {
-    // For single platform, still use monorepo structure but skip unnecessary apps
-    await generateMonorepo(architecture);
-  }
+    await generateClaudeContext(architecture, projectPath);
 
-  // Generate Claude Code context
-  await generateClaudeContext(architecture, projectPath);
+    if (architecture.dataModels) {
+      await generateSecurityRules(architecture, projectPath);
+      await generateTypes(architecture, projectPath);
+    }
 
-  // Generate security rules
-  if (architecture.dataModels) {
-    await generateSecurityRules(architecture, projectPath);
-  }
+    await generateDocs(architecture, projectPath);
+    await generateDevelopmentRoadmap(architecture, projectPath);
 
-  // Generate TypeScript types
-  if (architecture.dataModels) {
-    await generateTypes(architecture, projectPath);
-  }
+    console.log('✅ Project structure created\n');
 
-  // Generate documentation
-  await generateDocs(architecture, projectPath);
+    // PHASE 2: Firebase Setup
+    if (architecture.firebase?.create !== false) {
+      console.log('🔥 Phase 2: Setting up Firebase...\n');
 
-  // Generate development roadmap
-  await generateDevelopmentRoadmap(architecture, projectPath);
+      const config = {
+        projectName: architecture.firebase?.projectId || architecture.projectName,
+        displayName: architecture.displayName,
+        dataModels: architecture.dataModels,
+        platforms: architecture.platforms,
+        firebaseServices: architecture.firebaseServices,
+        cloudFunctions: architecture.cloudFunctions
+      };
 
-  // Git initialization (if requested)
-  if (architecture.git?.init !== false) {
-    console.log('\n📦 Initializing git repository...\n');
+      try {
+        const firebaseInfo = await setupFirebaseProject(config);
+        stats.firebaseProject = firebaseInfo.projectId;
+        console.log('✅ Firebase project configured\n');
+      } catch (error) {
+        console.log('⚠️  Firebase setup had issues (continuing...)\n');
+      }
+    }
+
+    // PHASE 3: Install Dependencies
+    console.log('📦 Phase 3: Installing dependencies...\n');
 
     try {
-      // Initialize git
-      execSync('git init', { cwd: projectPath, stdio: 'ignore' });
-
-      // Create .gitignore (already created by docs generator)
-
-      // Initial commit
-      if (architecture.git?.initialCommit !== false) {
-        execSync('git add .', { cwd: projectPath, stdio: 'ignore' });
-        execSync(
-          'git commit -m "Initial commit: Firebase Architect generated project\n\n🤖 Generated with Firebase Architect\n\nProject: ' +
-            architecture.displayName +
-            '\nType: ' +
-            architecture.projectType +
-            '\nPlatforms: ' +
-            (architecture.platforms?.join(', ') || 'web') +
-            '"',
-          { cwd: projectPath, stdio: 'ignore' }
-        );
-        console.log('✅ Initial commit created\n');
-      }
-
-      // Add remote (if provided)
-      if (architecture.git?.remote) {
-        execSync(`git remote add origin ${architecture.git.remote}`, {
-          cwd: projectPath,
-          stdio: 'ignore'
-        });
-        console.log(`✅ Remote added: ${architecture.git.remote}\n`);
-
-        // Push to remote (if requested)
-        if (architecture.git?.push) {
-          execSync('git branch -M main', { cwd: projectPath, stdio: 'ignore' });
-          execSync('git push -u origin main', { cwd: projectPath, stdio: 'ignore' });
-          console.log('✅ Pushed to remote\n');
-        }
+      const installed = await installDependencies(projectPath);
+      if (installed) {
+        stats.dependenciesInstalled = 'Complete';
+        console.log('✅ Dependencies installed\n');
       }
     } catch (error) {
-      console.log('⚠️  Git initialization had issues (this is optional, continuing...)\n');
+      console.log('⚠️  Dependency installation had issues (you can run npm install manually)\n');
     }
+
+    // PHASE 4: Deploy Firebase Resources
+    if (architecture.firebase?.create !== false && architecture.dataModels) {
+      console.log('🚀 Phase 4: Deploying Firebase resources...\n');
+
+      try {
+        await deployFirebaseResources(projectPath, architecture);
+        console.log('✅ Firebase rules and indexes deployed\n');
+      } catch (error) {
+        console.log('⚠️  Firebase deployment had issues (you can deploy manually)\n');
+      }
+    }
+
+    // PHASE 5: Git & GitHub Setup
+    console.log('📦 Phase 5: Setting up version control...\n');
+
+    const gitInitialized = await initializeGit(projectPath, architecture);
+
+    let githubInfo = null;
+    if (architecture.github?.create !== false) {
+      const githubOptions = architecture.github?.visibility ? {
+        visibility: architecture.github.visibility,
+        description: `${architecture.displayName} - Firebase Project`,
+        useGhCLI: true
+      } : await promptGitHubSetup();
+
+      if (githubOptions) {
+        githubInfo = await createGitHubRepository(projectPath, architecture.projectName, githubOptions);
+
+        if (githubInfo) {
+          stats.githubRepo = githubInfo.url;
+
+          // Optionally push to remote
+          if (architecture.github?.push !== false) {
+            await pushToRemote(projectPath);
+          }
+
+          // Optionally create issues from roadmap
+          if (architecture.github?.createIssues) {
+            const roadmapPath = path.join(projectPath, '.claude', 'ROADMAP.md');
+            await createGitHubIssuesFromRoadmap(projectPath, roadmapPath);
+          }
+        }
+      }
+    }
+
+    console.log('✅ Version control configured\n');
+
+    // PHASE 6: Final Summary & VS Code
+    const setupTime = `${Math.round((Date.now() - startTime) / 1000)}s`;
+    stats.setupTime = setupTime;
+
+    displaySetupSummary(stats);
+    displayNextSteps(projectPath, architecture.projectName, architecture);
+
+    // Open in VS Code
+    if (architecture.vscode?.open !== false) {
+      await openInVSCode(projectPath);
+    }
+
+    // Return to original directory
+    process.chdir(originalDir);
+
+    return {
+      projectPath,
+      stats,
+      handoffPrompt: path.join(projectPath, '.claude', 'HANDOFF_PROMPT.md'),
+      roadmap: path.join(projectPath, '.claude', 'ROADMAP.md')
+    };
+
+  } catch (error) {
+    // Return to original directory on error
+    process.chdir(originalDir);
+    throw error;
   }
-
-  console.log('\n✅ Project generated successfully!\n');
-
-  return {
-    projectPath,
-    nextSteps: [
-      `cd ${architecture.projectName}`,
-      'Review ARCHITECTURE.md for system design',
-      'Check .claude/ directory for development guides',
-      'Configure Firebase credentials in .env files',
-      'Run: npm install',
-      'Start development: npm run dev:web',
-      ...(architecture.git?.remote && !architecture.git?.push
-        ? ['Push to remote: git push -u origin main']
-        : [])
-    ]
-  };
 }
 
 // Export for use by Claude Code
