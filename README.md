@@ -42,60 +42,55 @@ This comprehensive guide covers:
 
 ## ⚡ Quick Start
 
-### 1. Prerequisites
+### 1. Prerequisites (One-Time Setup)
 ```bash
 # Required
 npm install -g firebase-tools
 firebase login
 
 # Optional but recommended
-gh auth login  # For GitHub repo creation
+gh auth login  # For automatic GitHub repo creation
 ```
 
-### 2. Clone This Repo
-```bash
-cd /home/user
-git clone <repo-url> firebase-architect
+### 2. Usage with Claude Code
+
+**Option A: Use the slash command**
+```
+/new-firebase
 ```
 
-### 3. Start Claude Code
-```bash
-cd /home/user
-code .
+**Option B: Just describe your app**
+```
+"Build me a Firebase task management app with teams and projects"
 ```
 
-### 4. Invoke the Tool
-```
-/new-firebase-app
-```
+Claude Code will:
+1. Ask clarifying questions about your requirements
+2. Build a complete architecture specification
+3. Call the generator tool (`run-generator.js`)
+4. Create the full project structure
 
-OR just say:
-```
-"Build me a Firebase task management app with teams"
-```
+### 3. What Gets Generated (Automatically)
 
-### 5. Answer Questions
-Claude will ask about:
-- App name and features
-- Platforms (web/mobile)
-- User roles
-- Auth providers
-- Integrations
-
-### 6. Everything Sets Up Automatically
 ```
-✅ Project structure created
-✅ Firebase project configured
+✅ Complete monorepo structure (web + mobile + functions)
+✅ TypeScript types from your data models
+✅ Zod validation schemas
+✅ Firestore security rules with RBAC
+✅ TanStack Query hooks for CRUD
 ✅ Git repository initialized
-✅ GitHub repo created
 ✅ Dependencies installed
-✅ Roadmap generated
+✅ Development roadmap and documentation
 ```
 
-### 7. Claude Starts Building
-Claude reads the handoff prompt and begins implementing features from the roadmap.
+### 4. Manual Steps (5 minutes)
 
-**That's it! Go from zero to ready-to-develop in minutes.**
+After generation:
+1. Copy `.env.example` to `.env`
+2. Enable auth providers in Firebase Console
+3. Start development: `npm run dev:web`
+
+**Result: ~85% automated - most manual work is unavoidable Firebase limitations**
 
 ---
 
