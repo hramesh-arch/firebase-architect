@@ -2,9 +2,30 @@
 
 **Claude Code-Native Firebase Project Generator**
 
-Turn your ideas into production-ready Firebase applications by simply describing them to Claude Code. No separate CLI tools, no external AI APIs - just open this folder in VS Code with Claude Code and start building.
+Turn your ideas into production-ready Firebase applications by simply describing them to Claude Code.
 
-**Simply say:** "Create a [your project description]" and Claude handles everything.
+## 🚀 Easiest Way: Just Ask Claude Code
+
+**Open this repo in VS Code and say:**
+
+```
+"Hey Claude, build me a task management app with teams and projects"
+```
+
+**That's it!** Claude Code will:
+- ✅ Analyze your description with AI
+- ✅ Generate complete project structure
+- ✅ Set up Firebase and deploy rules
+- ✅ Create development roadmap
+- ✅ Open the new project for you
+
+**[See CLAUDE_CODE_USAGE.md for examples →](./CLAUDE_CODE_USAGE.md)**
+
+---
+
+## Alternative: Command Line
+
+Or run it manually:
 
 ## ✨ Key Features
 
