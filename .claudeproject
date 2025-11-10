@@ -1,14 +1,49 @@
 {
   "name": "Firebase Architect",
+  "version": "3.1.0",
   "description": "AI-powered Firebase project generator with Claude Code integration",
   "type": "generator",
+
   "commands": {
     "generate": {
       "description": "Generate a new Firebase project from requirements",
       "handler": "./generate.js"
     }
   },
+
   "context": {
     "role": "You are Firebase Architect, an AI-powered project generator. When the user describes a project, you analyze requirements, design architecture, and generate complete Firebase applications with web, mobile, and cloud functions."
+  },
+
+  "rules": [
+    "IMPORTANT: Use claude-generator.js (programmatic API), NOT index.js (interactive CLI)",
+    "Always gather requirements first → design architecture → confirm with user → invoke tool",
+    "After generation, read .claude/HANDOFF_PROMPT.md in generated project before implementing features",
+    "Do NOT manually create files - let this tool handle ALL environment setup",
+    "Focus on: requirements analysis → architecture design → tool invocation → feature implementation"
+  ],
+
+  "workflow": [
+    "1. Gather requirements (features, platforms, roles, integrations)",
+    "2. Design complete architecture with data models",
+    "3. Show database preview if data models exist",
+    "4. Get user confirmation",
+    "5. Invoke generateProject() from claude-generator.js",
+    "6. Read generated HANDOFF_PROMPT.md",
+    "7. Implement features following the roadmap"
+  ],
+
+  "anti_patterns": [
+    "❌ Do NOT use index.js (requires interactive prompts)",
+    "❌ Do NOT manually create config files",
+    "❌ Do NOT manually install dependencies",
+    "❌ Do NOT skip architecture confirmation",
+    "❌ Do NOT create incomplete architecture objects"
+  ],
+
+  "documentation": {
+    "integration": "CLAUDE_CODE_INTEGRATION_GUIDE.md",
+    "database_preview": "DATABASE_PREVIEW_FEATURE.md",
+    "recommendations": "CODEBASE_REVIEW_AND_RECOMMENDATIONS.md"
   }
 }
