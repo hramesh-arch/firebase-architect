@@ -20,6 +20,10 @@ export async function generateDevelopmentRoadmap(config, projectPath) {
   const enhancedTasks = buildEnhancedTasks(config);
   fs.writeFileSync(path.join(claudeDir, 'TASKS.md'), enhancedTasks);
 
+  // Generate HANDOFF_PROMPT.md for Claude Code
+  const handoffPrompt = buildHandoffPrompt(config);
+  fs.writeFileSync(path.join(claudeDir, 'HANDOFF_PROMPT.md'), handoffPrompt);
+
   spinner.succeed('Development roadmap generated');
 }
 
@@ -492,11 +496,364 @@ function buildEnhancedTasks(config) {
 }
 
 /**
+ * Build handoff prompt for Claude Code
+ * This is the first file Claude Code should read when starting development
+ */
+function buildHandoffPrompt(config) {
+  const sections = [];
+
+  sections.push(`# Handoff Prompt: ${config.displayName || config.projectName}`);
+  sections.push('');
+  sections.push('**Welcome to your Firebase project!** This environment has been fully configured and is ready for feature development.');
+  sections.push('');
+  sections.push(`**Generated:** ${new Date().toLocaleString()}`);
+  sections.push('');
+  sections.push('---');
+  sections.push('');
+
+  // Environment Summary
+  sections.push('## 🏗️ Environment Summary');
+  sections.push('');
+  sections.push('Your development environment is **100% configured**. All setup work is complete:');
+  sections.push('');
+  sections.push('### ✅ Completed Setup');
+  sections.push('- **Project Structure**: Monorepo with web, mobile, and functions');
+  sections.push('- **Firebase Project**: Created and configured');
+  sections.push('- **Firestore Rules**: Generated and deployed');
+  sections.push('- **Firestore Indexes**: Generated and deployed');
+  sections.push('- **TypeScript Types**: All data models defined');
+  sections.push('- **Git Repository**: Initialized with initial commit');
+  sections.push('- **Dependencies**: All packages installed');
+  sections.push('- **Development Roadmap**: Complete plan in ROADMAP.md');
+  sections.push('');
+
+  // UI Template Section (if configured)
+  if (config.uiTemplate) {
+    sections.push('### 🎨 UI Template');
+    sections.push('');
+    sections.push(`**Template:** ${config.uiTemplate.templateName || config.uiTemplate.templateId}`);
+    sections.push(`**Framework:** ${config.uiTemplate.framework || 'Material-UI'}`);
+    sections.push('');
+    sections.push('**Configuration:**');
+    sections.push('```javascript');
+    sections.push(JSON.stringify(config.uiTemplate, null, 2));
+    sections.push('```');
+    sections.push('');
+    sections.push('**Files Created:**');
+    if (config.uiTemplate.themePath) {
+      sections.push(`- Theme: \`${config.uiTemplate.themePath}\``);
+    }
+    sections.push('- Component Library Setup: `apps/web/src/lib/ui-setup.ts`');
+    sections.push('- Example Components: `apps/web/src/components/`');
+    sections.push('');
+    sections.push('**Available Components:**');
+    if (config.uiTemplate.components && config.uiTemplate.components.length > 0) {
+      sections.push(config.uiTemplate.components.slice(0, 10).join(', '));
+      if (config.uiTemplate.components.length > 10) {
+        sections.push(`... and ${config.uiTemplate.components.length - 10} more`);
+      }
+    }
+    sections.push('');
+    sections.push('**Usage Example:**');
+    sections.push('```typescript');
+    sections.push('import UIProvider from \'./lib/ui-setup\';');
+    sections.push('');
+    sections.push('function App() {');
+    sections.push('  return (');
+    sections.push('    <UIProvider>');
+    sections.push('      {/* Your app content */}');
+    sections.push('    </UIProvider>');
+    sections.push('  );');
+    sections.push('}');
+    sections.push('```');
+    sections.push('');
+  }
+
+  sections.push('---');
+  sections.push('');
+
+  // Architecture Overview
+  sections.push('## 🏛️ Architecture Overview');
+  sections.push('');
+  sections.push(`**Description:** ${config.description || 'Firebase-powered application'}`);
+  sections.push('');
+  sections.push(`**Type:** ${config.projectType}`);
+  sections.push(`**Platforms:** ${config.platforms?.join(', ') || 'Web, Mobile'}`);
+  sections.push(`**Firebase Services:** ${config.firebaseServices?.join(', ') || 'Auth, Firestore, Storage, Functions'}`);
+  sections.push('');
+
+  // Tech Stack
+  if (config.recommendedStack || config.uiTemplate) {
+    sections.push('### 📚 Tech Stack');
+    sections.push('');
+    if (config.recommendedStack) {
+      Object.entries(config.recommendedStack).forEach(([key, value]) => {
+        sections.push(`- **${key}**: ${value}`);
+      });
+    }
+    if (config.uiTemplate) {
+      sections.push(`- **UI Framework**: ${config.uiTemplate.framework || 'Material-UI'}`);
+    }
+    sections.push('');
+  }
+
+  // Data Models
+  if (config.dataModels && config.dataModels.length > 0) {
+    sections.push('### 📊 Data Models');
+    sections.push('');
+    config.dataModels.forEach(model => {
+      sections.push(`**${model.name}**`);
+      sections.push(`- Collection: \`${model.collection || model.name.toLowerCase() + 's'}\``);
+      sections.push(`- Fields: ${model.fields?.length || 0} defined`);
+      if (model.fields && model.fields.length > 0) {
+        model.fields.slice(0, 5).forEach(field => {
+          sections.push(`  - ${field.name}: ${field.type}${field.required ? ' (required)' : ''}`);
+        });
+        if (model.fields.length > 5) {
+          sections.push(`  - ... and ${model.fields.length - 5} more`);
+        }
+      }
+      sections.push('');
+    });
+  }
+
+  // User Roles
+  if (config.userRoles && config.userRoles.length > 0) {
+    sections.push('### 👥 User Roles');
+    sections.push('');
+    config.userRoles.forEach(role => {
+      sections.push(`**${role.role}**`);
+      sections.push(`- ${role.description || role.permissions?.join(', ') || 'Permissions defined in security rules'}`);
+      sections.push('');
+    });
+  }
+
+  // Integrations
+  if (config.integrations && config.integrations.length > 0) {
+    sections.push('### 🔌 External Integrations');
+    sections.push('');
+    config.integrations.forEach(integration => {
+      sections.push(`- **${integration.name || integration}**: ${integration.purpose || 'Integration configured'}`);
+    });
+    sections.push('');
+  }
+
+  sections.push('---');
+  sections.push('');
+
+  // What to Build Next
+  sections.push('## 🚀 What to Build Next');
+  sections.push('');
+  sections.push('The environment is ready. Now it\'s time to build features!');
+  sections.push('');
+  sections.push('### Recommended First Steps');
+  sections.push('');
+  sections.push('1. **Review the complete roadmap**: Read `ROADMAP.md` for the full development plan');
+  sections.push('2. **Start with Cloud Functions**: Implement backend logic first (Phase 2.1)');
+  sections.push('3. **Build UI Components**: Create the interface (Phase 2.2)');
+  sections.push('4. **Add Integrations**: Connect external services (Phase 2.3)');
+  sections.push('5. **Test & Deploy**: Verify everything works (Phases 4-5)');
+  sections.push('');
+
+  // Suggested First Task
+  sections.push('### ✨ Suggested First Task');
+  sections.push('');
+  if (config.cloudFunctions && config.cloudFunctions.length > 0) {
+    const firstFunction = config.cloudFunctions[0];
+    sections.push(`Implement the **${firstFunction.name}** Cloud Function:`);
+    sections.push('');
+    sections.push('```');
+    sections.push(`Task: Implement ${firstFunction.name}`);
+    if (firstFunction.description) {
+      sections.push(`Description: ${firstFunction.description}`);
+    }
+    sections.push(`Type: ${firstFunction.type}`);
+    sections.push(`Location: apps/functions/src/index.ts`);
+    sections.push('```');
+    sections.push('');
+    sections.push('Ask me: "Implement the ' + firstFunction.name + ' Cloud Function with proper error handling and validation"');
+  } else if (config.dataModels && config.dataModels.length > 0) {
+    const firstModel = config.dataModels[0];
+    sections.push(`Build CRUD components for **${firstModel.name}**:`);
+    sections.push('');
+    sections.push('```');
+    sections.push(`Task: Create ${firstModel.name} UI components`);
+    sections.push(`Components: List view, Create/Edit form, Detail view`);
+    sections.push(`Location: apps/web/src/components/${firstModel.name}/`);
+    sections.push('```');
+    sections.push('');
+    sections.push('Ask me: "Create CRUD components for ' + firstModel.name + ' with list view, forms, and validation"');
+  } else {
+    sections.push('Review the roadmap and decide which feature to implement first.');
+    sections.push('');
+    sections.push('Ask me: "Show me the project structure and help me implement the first feature"');
+  }
+  sections.push('');
+
+  sections.push('---');
+  sections.push('');
+
+  // Development Commands
+  sections.push('## 💻 Development Commands');
+  sections.push('');
+  sections.push('```bash');
+  sections.push('# Web Development');
+  sections.push('npm run dev:web                 # Start web dev server');
+  sections.push('npm run build:web               # Build web app');
+  sections.push('');
+  sections.push('# Mobile Development');
+  sections.push('npm run dev:mobile              # Start Expo dev server');
+  sections.push('npm run build:mobile            # Build mobile app');
+  sections.push('');
+  sections.push('# Cloud Functions');
+  sections.push('npm run dev:functions           # Start functions emulator');
+  sections.push('npm run build:functions         # Build functions');
+  sections.push('');
+  sections.push('# Firebase');
+  sections.push('firebase emulators:start        # Start all emulators');
+  sections.push('firebase deploy                 # Deploy everything');
+  sections.push('firebase deploy --only firestore:rules   # Deploy rules only');
+  sections.push('firebase deploy --only functions         # Deploy functions only');
+  sections.push('firebase deploy --only hosting           # Deploy web app only');
+  sections.push('');
+  sections.push('# Testing');
+  sections.push('npm test                        # Run all tests');
+  sections.push('npm run test:web                # Test web app');
+  sections.push('npm run test:functions          # Test Cloud Functions');
+  sections.push('```');
+  sections.push('');
+
+  sections.push('---');
+  sections.push('');
+
+  // File Locations
+  sections.push('## 📁 Key File Locations');
+  sections.push('');
+  sections.push('### Web App');
+  sections.push('- Components: `apps/web/src/components/`');
+  sections.push('- Pages: `apps/web/src/pages/`');
+  sections.push('- Hooks: `apps/web/src/hooks/`');
+  if (config.uiTemplate) {
+    sections.push('- Theme: `apps/web/src/theme/`');
+    sections.push('- UI Setup: `apps/web/src/lib/ui-setup.ts`');
+  }
+  sections.push('');
+  sections.push('### Mobile App');
+  sections.push('- Screens: `apps/mobile/app/`');
+  sections.push('- Components: `apps/mobile/app/components/`');
+  sections.push('');
+  sections.push('### Cloud Functions');
+  sections.push('- Main file: `apps/functions/src/index.ts`');
+  sections.push('- Integrations: `apps/functions/src/integrations/`');
+  sections.push('');
+  sections.push('### Shared Packages');
+  sections.push('- Types: `packages/types/src/`');
+  sections.push('- Utilities: `packages/shared/src/`');
+  sections.push('');
+  sections.push('### Firebase Config');
+  sections.push('- Security Rules: `firestore.rules`');
+  sections.push('- Indexes: `firestore.indexes.json`');
+  sections.push('- Firebase Config: `firebase.json`');
+  sections.push('- Environment: `.env.example` (copy to `.env`)');
+  sections.push('');
+
+  sections.push('---');
+  sections.push('');
+
+  // Coding Standards
+  sections.push('## 📝 Coding Standards');
+  sections.push('');
+  sections.push('### TypeScript');
+  sections.push('- Use strict type checking');
+  sections.push('- Define interfaces for all data models');
+  sections.push('- Avoid `any` type unless absolutely necessary');
+  sections.push('- Use Zod for runtime validation');
+  sections.push('');
+  sections.push('### React/React Native');
+  sections.push('- Use functional components with hooks');
+  sections.push('- Use TanStack Query for data fetching');
+  sections.push('- Implement proper loading and error states');
+  sections.push('- Follow component composition patterns');
+  sections.push('');
+  if (config.uiTemplate) {
+    sections.push('### UI Components');
+    sections.push(`- Use ${config.uiTemplate.framework || 'Material-UI'} components from the template`);
+    sections.push('- Follow the theme configuration for colors and typography');
+    sections.push('- Ensure responsive design for all screen sizes');
+    sections.push('- Maintain accessibility standards (WCAG AA minimum)');
+    sections.push('');
+  }
+  sections.push('### Firebase');
+  sections.push('- Always check user authentication before data access');
+  sections.push('- Use batch writes for multiple operations');
+  sections.push('- Implement pagination for large lists');
+  sections.push('- Use real-time listeners sparingly (consider polling)');
+  sections.push('');
+  sections.push('### Security');
+  sections.push('- Validate all user inputs');
+  sections.push('- Never trust client-side data in Cloud Functions');
+  sections.push('- Use Firebase Security Rules as primary defense');
+  sections.push('- Implement rate limiting for sensitive operations');
+  sections.push('');
+
+  sections.push('---');
+  sections.push('');
+
+  // Additional Resources
+  sections.push('## 📚 Additional Resources');
+  sections.push('');
+  sections.push('### Documentation Files');
+  sections.push('- **ROADMAP.md**: Complete development plan with phases');
+  sections.push('- **ARCHITECTURE.md**: System design and technical decisions');
+  sections.push('- **TASKS.md**: Current sprint tasks');
+  sections.push('- **guides/**: How-to guides for common operations');
+  sections.push('- **prompts/**: Pre-written prompts for feature implementation');
+  sections.push('');
+  sections.push('### Firebase Console');
+  if (config.projectName) {
+    sections.push(`- Project: https://console.firebase.google.com/project/${config.projectName}`);
+    sections.push(`- Firestore: https://console.firebase.google.com/project/${config.projectName}/firestore`);
+    sections.push(`- Authentication: https://console.firebase.google.com/project/${config.projectName}/authentication`);
+    sections.push(`- Functions: https://console.firebase.google.com/project/${config.projectName}/functions`);
+  }
+  sections.push('');
+
+  sections.push('---');
+  sections.push('');
+
+  // Call to Action
+  sections.push('## 🎯 Ready to Build!');
+  sections.push('');
+  sections.push('Your environment is fully configured. Start implementing features from the roadmap!');
+  sections.push('');
+  sections.push('**Next Steps:**');
+  sections.push('1. Read `ROADMAP.md` for the complete plan');
+  sections.push('2. Pick a task from Phase 2');
+  sections.push('3. Ask me to implement it!');
+  sections.push('');
+  sections.push('**Example Request:**');
+  sections.push('```');
+  if (config.cloudFunctions && config.cloudFunctions.length > 0) {
+    sections.push(`"Implement the ${config.cloudFunctions[0].name} Cloud Function"`);
+  } else if (config.dataModels && config.dataModels.length > 0) {
+    sections.push(`"Create the ${config.dataModels[0].name} list view component with search"`);
+  } else {
+    sections.push('"Show me the current structure and help implement the first feature"');
+  }
+  sections.push('```');
+  sections.push('');
+  sections.push('**Let\'s build something amazing! 🚀**');
+
+  return sections.join('\n');
+}
+
+/**
  * Display roadmap generation summary
  */
 export function displayRoadmapSummary() {
   console.log(chalk.cyan('\n📋 Development Roadmap:\n'));
   console.log(chalk.white('   Generated comprehensive roadmap in .claude/ROADMAP.md'));
+  console.log(chalk.white('   Generated handoff prompt in .claude/HANDOFF_PROMPT.md'));
   console.log(chalk.white('   Updated task list in .claude/TASKS.md'));
   console.log(chalk.gray('\n   Review these files to plan your development with Claude Code\n'));
 }
