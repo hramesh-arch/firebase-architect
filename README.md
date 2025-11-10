@@ -14,6 +14,7 @@ Automatically sets up your complete Firebase development environment - folder st
 - ✅ Installs all dependencies
 - ✅ Creates development ROADMAP.md
 - ✅ Generates HANDOFF_PROMPT.md for Claude Code
+- ✨ **NEW**: Database structure preview before generation
 
 **Feature Development (Claude Code):**
 - ✅ Builds React components
@@ -125,6 +126,16 @@ Or run it manually:
 - Storage security rules included
 - Input validation with Zod schemas
 - Custom claims for Firebase Auth
+
+### ✨ Database Structure Preview (NEW v3.1)
+- **Visual Preview**: See complete database structure before generation
+- **Collections & Fields**: Detailed tables showing all data models
+- **Relationships**: Visual diagram of entity relationships
+- **Security Rules**: Preview access controls for each collection
+- **Storage Estimates**: Free tier capacity calculations
+- **Export Options**: Save as Markdown or JSON for documentation
+
+[📖 See Database Preview Feature Guide](DATABASE_PREVIEW_FEATURE.md)
 
 ### 📚 Claude Code Integration
 - `.claude/` directory with full project context

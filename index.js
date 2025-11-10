@@ -170,6 +170,25 @@ async function conversationalMode() {
   // Display architecture
   displayArchitecture(architecture);
 
+  // Display database preview if data models exist
+  if (architecture.dataModels && architecture.dataModels.length > 0) {
+    const { viewDatabase } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'viewDatabase',
+        message: 'View detailed database structure preview?',
+        default: true
+      }
+    ]);
+
+    if (viewDatabase) {
+      const { DatabasePreviewer } = await import('./generators/database-previewer.js');
+      const previewer = new DatabasePreviewer(architecture);
+      previewer.display();
+      previewer.displayERD();
+    }
+  }
+
   // Confirm
   const { proceed } = await inquirer.prompt([
     {
@@ -193,6 +212,28 @@ async function conversationalMode() {
     const refinedArchitecture = await refineArchitecture(architecture, modify);
     spinner.succeed('Architecture refined');
     displayArchitecture(refinedArchitecture);
+
+    // Show database preview for refined architecture
+    if (refinedArchitecture.dataModels && refinedArchitecture.dataModels.length > 0) {
+      const { viewDatabase } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'viewDatabase',
+          message: 'View detailed database structure preview?',
+          default: true
+        }
+      ]);
+
+      if (viewDatabase) {
+        const { DatabasePreviewer } = await import('./generators/database-previewer.js');
+        const previewer = new DatabasePreviewer(refinedArchitecture);
+        previewer.display();
+        previewer.displayERD();
+      }
+    }
+
+    // Update architecture reference
+    architecture = refinedArchitecture;
   }
 
   // Get project details
@@ -291,6 +332,25 @@ async function promptMode() {
   spinner.succeed('Requirements analyzed');
 
   displayArchitecture(architecture);
+
+  // Display database preview if data models exist
+  if (architecture.dataModels && architecture.dataModels.length > 0) {
+    const { viewDatabase } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'viewDatabase',
+        message: 'View detailed database structure preview?',
+        default: true
+      }
+    ]);
+
+    if (viewDatabase) {
+      const { DatabasePreviewer } = await import('./generators/database-previewer.js');
+      const previewer = new DatabasePreviewer(architecture);
+      previewer.display();
+      previewer.displayERD();
+    }
+  }
 
   const { proceed } = await inquirer.prompt([
     {
