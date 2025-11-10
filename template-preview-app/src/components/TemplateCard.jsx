@@ -4,8 +4,22 @@ export default function TemplateCard({ template, onCustomize }) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
       {/* Thumbnail */}
-      <div className="aspect-video bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
+      <div className="aspect-video bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center relative">
         <Monitor className="w-16 h-16 text-gray-400" />
+        {/* Badge */}
+        {template.badge && (
+          <span
+            className={`absolute top-3 right-3 px-2.5 py-1 text-xs font-semibold rounded-full shadow-sm ${
+              template.badge === 'Popular'
+                ? 'bg-orange-500 text-white'
+                : template.badge === 'New'
+                ? 'bg-green-500 text-white'
+                : 'bg-gray-500 text-white'
+            }`}
+          >
+            {template.badge}
+          </span>
+        )}
       </div>
 
       {/* Content */}

@@ -1,12 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { HexColorPicker } from 'react-colorful';
-import { X, Copy, Check, ArrowLeft, Palette, Type } from 'lucide-react';
+import { X, Copy, Check, ArrowLeft, Palette, Type, Monitor, Tablet, Smartphone, RotateCcw } from 'lucide-react';
 import { COLOR_PALETTES, FONT_COMBINATIONS } from '../data/templates';
 
 export default function Customizer({ template, onClose }) {
-  const [config, setConfig] = useState(JSON.parse(JSON.stringify(template.defaultConfig)));
+  const [config, setConfig] = useState(() => {
+    // Try to load from localStorage first
+    const saved = localStorage.getItem(`template-${template.id}`);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return JSON.parse(JSON.stringify(template.defaultConfig));
+      }
+    }
+    return JSON.parse(JSON.stringify(template.defaultConfig));
+  });
   const [activeColorPicker, setActiveColorPicker] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [previewDevice, setPreviewDevice] = useState('desktop'); // desktop, tablet, mobile
+
+  // Save to localStorage whenever config changes
+  useEffect(() => {
+    localStorage.setItem(`template-${template.id}`, JSON.stringify(config));
+  }, [config, template.id]);
+
+  // Device preview widths
+  const deviceWidths = {
+    desktop: '100%',
+    tablet: '768px',
+    mobile: '375px'
+  };
 
   const updateColor = (colorKey, value) => {
     setConfig(prev => ({
@@ -51,6 +75,14 @@ export default function Customizer({ template, onClose }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const resetToDefault = () => {
+    if (confirm('Reset all customizations to default values?')) {
+      const defaultConfig = JSON.parse(JSON.stringify(template.defaultConfig));
+      setConfig(defaultConfig);
+      localStorage.removeItem(`template-${template.id}`);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -69,13 +101,27 @@ export default function Customizer({ template, onClose }) {
                 <p className="text-sm text-gray-600">{template.framework}</p>
               </div>
             </div>
-            <button
-              onClick={copyToClipboard}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              {copied ? 'Copied!' : 'Copy Configuration'}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={resetToDefault}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                title="Reset to default"
+              >
+                <RotateCcw className="w-4 h-4" />
+                <span className="hidden sm:inline">Reset</span>
+              </button>
+              <button
+                onClick={copyToClipboard}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+                  copied
+                    ? 'bg-green-600 text-white scale-105'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+              >
+                {copied ? <Check className="w-4 h-4 animate-bounce" /> : <Copy className="w-4 h-4" />}
+                {copied ? 'Copied!' : 'Copy Configuration'}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -85,10 +131,56 @@ export default function Customizer({ template, onClose }) {
           {/* Preview Area */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold mb-4">Live Preview</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Live Preview</h3>
 
-              {/* Preview Content */}
-              <div className="space-y-4">
+                {/* Device Selector */}
+                <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                  <button
+                    onClick={() => setPreviewDevice('desktop')}
+                    className={`p-2 rounded transition-colors ${
+                      previewDevice === 'desktop'
+                        ? 'bg-white shadow-sm text-blue-600'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                    title="Desktop (1920px)"
+                  >
+                    <Monitor className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setPreviewDevice('tablet')}
+                    className={`p-2 rounded transition-colors ${
+                      previewDevice === 'tablet'
+                        ? 'bg-white shadow-sm text-blue-600'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                    title="Tablet (768px)"
+                  >
+                    <Tablet className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setPreviewDevice('mobile')}
+                    className={`p-2 rounded transition-colors ${
+                      previewDevice === 'mobile'
+                        ? 'bg-white shadow-sm text-blue-600'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                    title="Mobile (375px)"
+                  >
+                    <Smartphone className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Preview Content with Responsive Width */}
+              <div className="flex justify-center">
+                <div
+                  className="space-y-4 transition-all duration-300"
+                  style={{
+                    width: deviceWidths[previewDevice],
+                    maxWidth: '100%'
+                  }}
+                >
                 {/* Color Preview */}
                 <div className="p-6 rounded-lg" style={{ backgroundColor: config.colors.primary }}>
                   <div className="text-white">
@@ -132,6 +224,7 @@ export default function Customizer({ template, onClose }) {
                   <p className="text-gray-600" style={{ fontSize: `${config.typography.fontSize}px` }}>
                     This is a sample card showing how your content will appear.
                   </p>
+                </div>
                 </div>
               </div>
             </div>

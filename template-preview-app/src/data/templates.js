@@ -8,6 +8,7 @@ export const UI_TEMPLATES = {
     description: 'Clean, modern design based on Google Material Design principles. Perfect for data-heavy applications.',
     framework: 'Material-UI (MUI)',
     category: 'enterprise',
+    badge: 'Popular',
     defaultConfig: {
       colors: {
         primary: '#1976d2',
@@ -112,6 +113,7 @@ export const UI_TEMPLATES = {
     description: 'Beautifully designed components built with Radix UI and Tailwind CSS. Copy and own.',
     framework: 'Shadcn/ui',
     category: 'modern',
+    badge: 'New',
     defaultConfig: {
       colors: {
         primary: 'hsl(222.2 47.4% 11.2%)',
@@ -138,6 +140,7 @@ export const UI_TEMPLATES = {
     description: 'Beautiful, highly accessible design inspired by Med Refills app. WCAG AAA compliant with excellent readability.',
     framework: 'React + Material-UI',
     category: 'professional',
+    badge: 'Popular',
     defaultConfig: {
       colors: {
         primary: '#0066cc',
