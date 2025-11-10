@@ -100,16 +100,23 @@ your-project/
 
 ## What's Automated
 
-### Environment Setup (The Tool)
-- ✅ Complete project structure
-- ✅ Firebase project creation
-- ✅ Firebase Web App creation
-- ✅ **Firebase config auto-retrieval** (no manual copy/paste!)
-- ✅ Firestore security rules (generated & deployed)
-- ✅ TypeScript types for data models
-- ✅ Git + GitHub setup
+### Fully Automated (Zero Manual Steps)
+- ✅ Complete project structure (monorepo)
+- ✅ TypeScript types from data models
+- ✅ Zod validation schemas
+- ✅ Firestore security rules (generated)
+- ✅ TanStack Query hooks for CRUD
+- ✅ Development roadmap and documentation
 - ✅ All dependencies installed
-- ✅ Development roadmap
+
+### Requires Confirmation (1-2 clicks)
+- ⚠️ Firebase project creation (tool creates it, may need confirmation)
+- ⚠️ Firebase Web App creation (automatic via CLI)
+- ⚠️ GitHub repository creation (if gh CLI is installed)
+
+### Manual Steps Required (5 minutes)
+- ❌ Enable Auth providers in Firebase Console (Google, Email/Password)
+- ❌ Copy `.env.example` to `.env`
 
 ### Feature Building (Claude Code)
 - ✅ React components

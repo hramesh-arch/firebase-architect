@@ -117,28 +117,25 @@ your-app-name/
 ## What's Automated
 
 ### Fully Automated (Zero Manual Steps)
-- ✅ Complete project structure
-- ✅ Firebase project creation
-- ✅ Firebase Web App creation
-- ✅ **Firebase config retrieval** (API keys, etc.)
-- ✅ Firestore security rules deployment
+- ✅ Complete project structure (monorepo with web/mobile/functions)
+- ✅ TypeScript types from your data models
+- ✅ Zod validation schemas
+- ✅ Firestore security rules (generated)
+- ✅ TanStack Query hooks for all CRUD operations
 - ✅ Git initialization + first commit
-- ✅ GitHub repository creation (with labels!)
 - ✅ Dependency installation
 - ✅ Development roadmap generation
-- ✅ VS Code auto-opening
 
-### One Simple Step
-- Copy `.env.example` to `.env`:
-  ```bash
-  cp .env.example .env
-  ```
+### Requires Interaction (1-2 minutes)
+- ⚠️ Firebase project creation (tool runs command, may need confirmation)
+- ⚠️ GitHub repository creation (if gh CLI installed, requires permission)
 
-### Manual (If Needed)
-- Configure auth providers in Firebase Console
-- Add third-party API keys (Stripe, SendGrid, etc.)
+### Manual Steps Required (5 minutes)
+- ❌ Copy `.env.example` to `.env`
+- ❌ Enable auth providers in Firebase Console (Google, Email/Password)
+- ❌ Add third-party API keys if needed (Stripe, SendGrid, etc.)
 
-**Result: ~95% automated!**
+**Result: ~85% automated** (most manual work is unavoidable Firebase limitations)
 
 ---
 

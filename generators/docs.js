@@ -18,7 +18,7 @@ export async function generateDocs(config, projectPath) {
   fs.writeFileSync(path.join(projectPath, 'CONTRIBUTING.md'), contributing);
 
   // Generate .env.example files for each app
-  generate EnvExamples(config, projectPath);
+  generateEnvExamples(config, projectPath);
 
   spinner.succeed('Documentation generated');
 }
