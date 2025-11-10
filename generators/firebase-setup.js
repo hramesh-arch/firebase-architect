@@ -157,11 +157,33 @@ function determineRequiredServices(config) {
 }
 
 /**
- * Enable Firebase services for the project
- * Note: Some services are auto-enabled, but we'll initialize them in the project
+ * Enable Firebase services for the project and create apps
+ * Leverages Firebase CLI for maximum automation
  */
 async function enableFirebaseServices(projectId, services) {
   const spinner = ora();
+
+  // Create web app for the project (most projects need this)
+  try {
+    spinner.start('Creating Firebase Web App...');
+    const webAppId = await createFirebaseWebApp(projectId);
+    if (webAppId) {
+      spinner.succeed('Firebase Web App created');
+
+      // Get web app config for .env file
+      try {
+        const config = await getWebAppConfig(projectId, webAppId);
+        if (config) {
+          await saveFirebaseConfig(config);
+          spinner.succeed('Firebase config saved to .env.example');
+        }
+      } catch (error) {
+        spinner.warn('Could not fetch web app config - add manually from Firebase Console');
+      }
+    }
+  } catch (error) {
+    spinner.warn('Could not create web app - create manually in Firebase Console');
+  }
 
   for (const service of services) {
     try {
@@ -195,6 +217,72 @@ async function enableFirebaseServices(projectId, services) {
       spinner.warn(`${service} - enable manually in Firebase Console`);
     }
   }
+}
+
+/**
+ * Create Firebase Web App using CLI
+ */
+async function createFirebaseWebApp(projectId) {
+  try {
+    const result = execSync(
+      `npx firebase apps:create WEB "${projectId}-web" --project=${projectId}`,
+      {
+        encoding: 'utf-8',
+        stdio: 'pipe'
+      }
+    );
+
+    // Extract app ID from output
+    const match = result.match(/App ID: (.+)/);
+    return match ? match[1].trim() : null;
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
+ * Get Web App config for .env file
+ */
+async function getWebAppConfig(projectId, appId) {
+  try {
+    const result = execSync(
+      `npx firebase apps:sdkconfig WEB ${appId} --project=${projectId}`,
+      {
+        encoding: 'utf-8',
+        stdio: 'pipe'
+      }
+    );
+
+    // Parse the config from output
+    const configMatch = result.match(/const firebaseConfig = ({[\s\S]*?});/);
+    if (configMatch) {
+      return JSON.parse(configMatch[1].replace(/'/g, '"'));
+    }
+    return null;
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
+ * Save Firebase config to .env.example
+ */
+async function saveFirebaseConfig(config) {
+  const envContent = `
+# Firebase Configuration
+VITE_FIREBASE_API_KEY=${config.apiKey}
+VITE_FIREBASE_AUTH_DOMAIN=${config.authDomain}
+VITE_FIREBASE_PROJECT_ID=${config.projectId}
+VITE_FIREBASE_STORAGE_BUCKET=${config.storageBucket}
+VITE_FIREBASE_MESSAGING_SENDER_ID=${config.messagingSenderId}
+VITE_FIREBASE_APP_ID=${config.appId}
+${config.measurementId ? `VITE_FIREBASE_MEASUREMENT_ID=${config.measurementId}` : ''}
+
+# Copy this file to .env and fill in any additional secrets
+`;
+
+  const fs = await import('fs');
+  fs.writeFileSync('.env.example', envContent.trim());
 }
 
 /**

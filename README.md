@@ -1,25 +1,101 @@
 # Firebase Architect v3.0
 
-**Claude Code-Native Firebase Project Generator**
+**Firebase Environment Setup Tool for Claude Code**
 
-Turn your ideas into production-ready Firebase applications by simply describing them to Claude Code.
+Automatically sets up your complete Firebase development environment - folder structure, Firebase project, Git repo, dependencies, and roadmap. Then hands off to Claude Code to build your application.
 
-## 🚀 Easiest Way: Just Ask Claude Code
+## 🎯 What This Does
 
-**Open this repo in VS Code and say:**
+**Environment Setup (This Tool):**
+- ✅ Creates monorepo structure (web + mobile + functions)
+- ✅ Sets up Firebase project in the cloud
+- ✅ Generates config files and security rules
+- ✅ Initializes Git + GitHub repository
+- ✅ Installs all dependencies
+- ✅ Creates development ROADMAP.md
+- ✅ Generates HANDOFF_PROMPT.md for Claude Code
 
+**Feature Development (Claude Code):**
+- ✅ Builds React components
+- ✅ Implements API endpoints
+- ✅ Creates UI screens
+- ✅ Adds business logic
+
+**This tool does NOT generate application code - Claude Code does that after setup.**
+
+---
+
+## 📖 Complete Guide
+
+**🟢 [READ THIS FIRST: HOW_TO_USE_FIREBASE_ARCHITECT.md](../HOW_TO_USE_FIREBASE_ARCHITECT.md)**
+
+This comprehensive guide covers:
+- Prerequisites and setup
+- Directory structure
+- How to invoke the tool
+- Complete workflow example
+- What gets automated
+- Troubleshooting
+- Tips for best results
+
+---
+
+## ⚡ Quick Start
+
+### 1. Prerequisites
+```bash
+# Required
+npm install -g firebase-tools
+firebase login
+
+# Optional but recommended
+gh auth login  # For GitHub repo creation
 ```
-"Hey Claude, build me a task management app with teams and projects"
+
+### 2. Clone This Repo
+```bash
+cd /home/user
+git clone <repo-url> firebase-architect
 ```
 
-**That's it!** Claude Code will:
-- ✅ Analyze your description with AI
-- ✅ Generate complete project structure
-- ✅ Set up Firebase and deploy rules
-- ✅ Create development roadmap
-- ✅ Open the new project for you
+### 3. Start Claude Code
+```bash
+cd /home/user
+code .
+```
 
-**[See CLAUDE_CODE_USAGE.md for examples →](./CLAUDE_CODE_USAGE.md)**
+### 4. Invoke the Tool
+```
+/new-firebase-app
+```
+
+OR just say:
+```
+"Build me a Firebase task management app with teams"
+```
+
+### 5. Answer Questions
+Claude will ask about:
+- App name and features
+- Platforms (web/mobile)
+- User roles
+- Auth providers
+- Integrations
+
+### 6. Everything Sets Up Automatically
+```
+✅ Project structure created
+✅ Firebase project configured
+✅ Git repository initialized
+✅ GitHub repo created
+✅ Dependencies installed
+✅ Roadmap generated
+```
+
+### 7. Claude Starts Building
+Claude reads the handoff prompt and begins implementing features from the roadmap.
+
+**That's it! Go from zero to ready-to-develop in minutes.**
 
 ---
 
