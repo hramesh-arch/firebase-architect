@@ -10,46 +10,56 @@ export const materialDesignSystem = {
   usedBy: ['Android', 'Google Workspace', 'Gmail', 'Google Cloud'],
 
   // Foundation tokens - immutable design system values
+  // Source: https://m3.material.io/
   foundations: {
+    // M3 uses 4dp base grid with 8dp alignment for components
     spacing: {
-      unit: 8,
+      unit: 4, // 4dp base unit
       scale: {
         0: 0,
-        1: 4,
-        2: 8,
-        3: 12,
-        4: 16,
-        5: 24,
-        6: 32,
-        7: 48,
-        8: 64
+        1: 4,   // 4dp - minimum spacing
+        2: 8,   // 8dp - standard component spacing
+        3: 12,  // 12dp
+        4: 16,  // 16dp - standard padding
+        5: 20,  // 20dp
+        6: 24,  // 24dp - larger spacing
+        7: 32,  // 32dp
+        8: 48   // 48dp - minimum touch target
       }
     },
 
+    // M3 Shape Scale: https://m3.material.io/styles/shape/shape-scale-tokens
     borderRadius: {
-      none: 0,
-      sm: 4,
-      md: 8,
-      lg: 12,
-      xl: 16,
-      full: 9999
+      none: 0,        // No rounding
+      xs: 4,          // Extra Small - 4dp
+      sm: 8,          // Small - 8dp
+      md: 12,         // Medium - 12dp (default for cards)
+      lg: 16,         // Large - 16dp
+      xl: 24,         // Extra Large - 24dp
+      full: 9999      // Full rounding
     },
 
+    // M3 Elevation System: https://m3.material.io/styles/elevation/overview
+    // Three-tier elevation with precise shadow specs
     shadows: {
       none: 'none',
-      sm: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
-      md: '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
-      lg: '0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)',
-      xl: '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)',
-      elevated: '0 4px 8px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.08)'
+      elevation1: '0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15)',
+      elevation2: '0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 2px 6px 2px rgba(0, 0, 0, 0.15)',
+      elevation3: '0px 1px 3px 0px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15)',
+      // Aliases for easier use
+      sm: '0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15)',
+      md: '0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 2px 6px 2px rgba(0, 0, 0, 0.15)',
+      lg: '0px 1px 3px 0px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15)'
     },
 
+    // M3 Typography uses Roboto and Google Sans
     typography: {
-      fontFamily: "'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      fontFamily: "'Roboto', 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
       fontWeights: {
         light: 300,
         regular: 400,
         medium: 500,
+        semibold: 600,
         bold: 700
       },
       lineHeights: {
@@ -59,6 +69,7 @@ export const materialDesignSystem = {
       }
     },
 
+    // M3 Motion System - standard easing curves
     transitions: {
       duration: {
         fast: '150ms',
@@ -66,9 +77,24 @@ export const materialDesignSystem = {
         slow: '350ms'
       },
       easing: {
-        standard: 'cubic-bezier(0.4, 0.0, 0.2, 1)',
-        accelerate: 'cubic-bezier(0.4, 0.0, 1, 1)',
-        decelerate: 'cubic-bezier(0.0, 0.0, 0.2, 1)'
+        standard: 'cubic-bezier(0.4, 0.0, 0.2, 1)',  // Standard easing
+        accelerate: 'cubic-bezier(0.4, 0.0, 1, 1)',  // Accelerate
+        decelerate: 'cubic-bezier(0.0, 0.0, 0.2, 1)' // Decelerate
+      }
+    },
+
+    // M3 specific: Border widths
+    borders: {
+      width: {
+        none: 0,
+        thin: 1,
+        medium: 2
+      },
+      style: 'solid',
+      colors: {
+        subtle: 'rgba(0, 0, 0, 0.08)',
+        default: 'rgba(0, 0, 0, 0.12)',
+        strong: 'rgba(0, 0, 0, 0.2)'
       }
     }
   },

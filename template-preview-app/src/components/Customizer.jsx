@@ -19,6 +19,7 @@ import { DesignSystemProvider } from '../providers/DesignSystemProvider';
 
 // Import adaptive dashboard that responds to design system
 import AdaptiveDashboard from './previews/AdaptiveDashboard';
+import Material3Dashboard from './previews/Material3Dashboard';
 import MondayDashboard from './previews/MondayDashboard';
 import TrelloDashboard from './previews/TrelloDashboard';
 import FormPreview from './previews/FormPreview';
@@ -362,7 +363,13 @@ export default function Customizer({ template, onClose }) {
             >
               <DesignSystemProvider system={designSystem} theme={theme}>
                 {previewTab === 'dashboard' && (
-                  <AdaptiveDashboard config={config} />
+                  <>
+                    {designSystemId === 'material' ? (
+                      <Material3Dashboard config={config} />
+                    ) : (
+                      <AdaptiveDashboard config={config} />
+                    )}
+                  </>
                 )}
                 {previewTab === 'form' && (
                   <div className="bg-gray-50 p-8 min-h-full">
