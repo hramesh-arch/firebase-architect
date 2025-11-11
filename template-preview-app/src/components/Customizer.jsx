@@ -23,6 +23,9 @@ import Material3Dashboard from './previews/Material3Dashboard';
 import Material3CardsPreview from './previews/Material3CardsPreview';
 import Material3TablePreview from './previews/Material3TablePreview';
 import Material3FormPreview from './previews/Material3FormPreview';
+import CarbonCardsPreview from './previews/CarbonCardsPreview';
+import CarbonTablePreview from './previews/CarbonTablePreview';
+import CarbonFormPreview from './previews/CarbonFormPreview';
 import MondayDashboard from './previews/MondayDashboard';
 import TrelloDashboard from './previews/TrelloDashboard';
 import FormPreview from './previews/FormPreview';
@@ -378,6 +381,8 @@ export default function Customizer({ template, onClose }) {
                   <>
                     {designSystemId === 'material' ? (
                       <Material3FormPreview config={config} />
+                    ) : designSystemId === 'carbon' ? (
+                      <CarbonFormPreview config={config} />
                     ) : (
                       <div className="bg-gray-50 p-8 min-h-full">
                         <FormPreview config={config} template={legacyTemplate} />
@@ -389,6 +394,8 @@ export default function Customizer({ template, onClose }) {
                   <>
                     {designSystemId === 'material' ? (
                       <Material3CardsPreview config={config} />
+                    ) : designSystemId === 'carbon' ? (
+                      <CarbonCardsPreview config={config} />
                     ) : (
                       <div className="bg-gray-50 min-h-full">
                         <CardsPreview config={config} template={legacyTemplate} />
@@ -400,6 +407,8 @@ export default function Customizer({ template, onClose }) {
                   <>
                     {designSystemId === 'material' ? (
                       <Material3TablePreview config={config} />
+                    ) : designSystemId === 'carbon' ? (
+                      <CarbonTablePreview config={config} />
                     ) : (
                       <div className="bg-gray-50 p-8 min-h-full">
                         <TablePreview config={config} template={legacyTemplate} />

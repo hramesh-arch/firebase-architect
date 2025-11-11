@@ -1,0 +1,7 @@
+// Carbon Table Preview Styles
+@use '@carbon/react';
+
+.carbon-table-preview {
+  // Ensure Carbon tokens are applied
+  @include carbon--theme();
+}

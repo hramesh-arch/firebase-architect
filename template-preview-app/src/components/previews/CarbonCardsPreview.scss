@@ -1,0 +1,7 @@
+// Carbon Cards Preview Styles
+@use '@carbon/react';
+
+.carbon-cards-preview {
+  // Ensure Carbon tokens are applied
+  @include carbon--theme();
+}

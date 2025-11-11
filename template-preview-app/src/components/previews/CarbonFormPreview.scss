@@ -1,0 +1,7 @@
+// Carbon Form Preview Styles
+@use '@carbon/react';
+
+.carbon-form-preview {
+  // Ensure Carbon tokens are applied
+  @include carbon--theme();
+}
