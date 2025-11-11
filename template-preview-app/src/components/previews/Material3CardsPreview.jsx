@@ -101,7 +101,8 @@ export default function Material3CardsPreview({ config }) {
       tasks: { completed: 23, total: 34 },
       dueDate: 'Dec 25, 2024',
       priority: 'High',
-      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=200&fit=crop'
+      icon: AssessmentIcon,
+      bgGradient: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.15)} 0%, ${alpha(theme.palette.secondary.main, 0.15)} 100%)`
     },
     {
       title: 'Mobile App Development',
@@ -113,7 +114,8 @@ export default function Material3CardsPreview({ config }) {
       tasks: { completed: 12, total: 28 },
       dueDate: 'Jan 15, 2025',
       priority: 'High',
-      image: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=400&h=200&fit=crop'
+      icon: ShoppingCartIcon,
+      bgGradient: `linear-gradient(135deg, ${alpha(theme.palette.info.main, 0.15)} 0%, ${alpha(theme.palette.primary.main, 0.15)} 100%)`
     },
     {
       title: 'Analytics Dashboard',
@@ -125,7 +127,8 @@ export default function Material3CardsPreview({ config }) {
       tasks: { completed: 18, total: 18 },
       dueDate: 'Nov 30, 2024',
       priority: 'Medium',
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop'
+      icon: CheckCircleIcon,
+      bgGradient: `linear-gradient(135deg, ${alpha(theme.palette.success.main, 0.15)} 0%, ${alpha(theme.palette.info.main, 0.15)} 100%)`
     }
   ];
 
@@ -137,7 +140,7 @@ export default function Material3CardsPreview({ config }) {
       description: 'Full access to all premium features',
       features: ['Unlimited projects', 'Priority support', 'Advanced analytics'],
       popular: true,
-      image: 'https://images.unsplash.com/photo-1557426272-fc759fdf7a8d?w=400&h=300&fit=crop'
+      bgGradient: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.2)} 0%, ${alpha(theme.palette.secondary.main, 0.1)} 100%)`
     },
     {
       name: 'Enterprise Plan',
@@ -146,7 +149,7 @@ export default function Material3CardsPreview({ config }) {
       description: 'Designed for large teams and organizations',
       features: ['Everything in Premium', 'Custom integrations', 'Dedicated account manager'],
       popular: false,
-      image: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400&h=300&fit=crop'
+      bgGradient: `linear-gradient(135deg, ${alpha(theme.palette.secondary.main, 0.2)} 0%, ${alpha(theme.palette.primary.main, 0.1)} 100%)`
     }
   ];
 
@@ -162,14 +165,14 @@ export default function Material3CardsPreview({ config }) {
             {metrics.map((metric, i) => (
               <Grid item xs={12} sm={6} md={3} key={i}>
                 <Card
-                  elevation={i === 0 ? 0 : i % 3 === 0 ? 3 : 1}
+                  elevation={i === 0 ? 0 : i % 3 === 0 ? 2 : 1}
                   sx={{
                     height: '100%',
                     border: i === 0 ? 1 : 0,
                     borderColor: 'divider',
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     '&:hover': {
-                      elevation: 8,
+                      boxShadow: 4,
                       transform: 'translateY(-4px)',
                     }
                   }}
@@ -239,18 +242,24 @@ export default function Material3CardsPreview({ config }) {
                     flexDirection: 'column',
                     transition: 'all 0.3s',
                     '&:hover': {
-                      elevation: 6,
+                      boxShadow: 4,
                       transform: 'translateY(-4px)',
                     }
                   }}
                 >
-                  <CardMedia
-                    component="img"
-                    height="160"
-                    image={project.image}
-                    alt={project.title}
-                    sx={{ bgcolor: alpha(project.statusColor, 0.1) }}
-                  />
+                  <Box
+                    sx={{
+                      height: 160,
+                      background: project.bgGradient,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      position: 'relative',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    <project.icon sx={{ fontSize: 64, color: alpha(project.statusColor, 0.3) }} />
+                  </Box>
                   <CardHeader
                     avatar={
                       <Avatar sx={{ bgcolor: project.statusColor }}>
@@ -397,12 +406,17 @@ export default function Material3CardsPreview({ config }) {
                       />
                     </Box>
                   )}
-                  <CardMedia
-                    component="img"
-                    height="200"
-                    image={product.image}
-                    alt={product.name}
-                  />
+                  <Box
+                    sx={{
+                      height: 200,
+                      background: product.bgGradient,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <MoneyIcon sx={{ fontSize: 72, color: alpha(theme.palette.primary.main, 0.25) }} />
+                  </Box>
                   <CardContent sx={{ p: 3 }}>
                     <Typography variant="h5" fontWeight={700} gutterBottom>
                       {product.name}
