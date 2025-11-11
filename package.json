@@ -1,6 +1,6 @@
 {
   "name": "firebase-architect",
-  "version": "3.0.0",
+  "version": "3.2.0",
   "description": "AI-powered Firebase project architect with Claude Code integration",
   "type": "module",
   "main": "index.js",

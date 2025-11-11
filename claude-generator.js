@@ -36,10 +36,16 @@ const __dirname = path.dirname(__filename);
  * @param {Object} architecture.firebase - Firebase configuration (optional)
  * @param {boolean} architecture.firebase.create - Create Firebase project (default: true)
  * @param {string} architecture.firebase.projectId - Firebase project ID (defaults to projectName)
+ * @param {boolean} architecture.firebase.autoConfig - Auto-configure Firebase services (default: true) [NEW v3.2]
+ * @param {boolean} architecture.firebase.setupBilling - Interactive billing setup (default: true if Cloud Functions) [NEW v3.2]
  * @param {Object} architecture.github - GitHub configuration (optional)
  * @param {boolean} architecture.github.create - Create GitHub repo (default: true)
  * @param {string} architecture.github.visibility - 'public' or 'private' (default: 'private')
  * @param {boolean} architecture.github.createIssues - Create issues from roadmap (default: false)
+ * @param {Array<string|Object>} architecture.github.collaborators - GitHub collaborators to add [NEW v3.2]
+ *   - Can be array of usernames: ['user1', 'user2']
+ *   - Or array of objects: [{ username: 'user1', permission: 'push' }]
+ *   - Permissions: 'pull' (read), 'push' (write), 'admin' (full), 'maintain', 'triage'
  * @param {Object} architecture.vscode - VS Code configuration (optional)
  * @param {boolean} architecture.vscode.open - Open in VS Code (default: true)
  * @param {Object} architecture.uiTemplate - UI Template configuration (optional)
@@ -72,8 +78,10 @@ export async function generateProject(architecture) {
   const { generateDevelopmentRoadmap } = await import('./generators/roadmap.js');
   const { generateUITemplate, displayTemplateInfo } = await import('./generators/ui-template-generator.js');
   const { setupFirebaseProject } = await import('./generators/firebase-setup.js');
+  const { autoConfigureFirebaseServices, displayAutoConfigSummary } = await import('./generators/firebase-auto-config.js');
+  const { guideBillingSetup, displayBillingSummary, checkIfBillingNeeded } = await import('./generators/firebase-billing-helper.js');
   const { installDependencies, deployFirebaseResources } = await import('./generators/deployment.js');
-  const { initializeGit, promptGitHubSetup, createGitHubRepository, pushToRemote, createGitHubIssuesFromRoadmap } = await import('./generators/git-setup.js');
+  const { initializeGit, promptGitHubSetup, createGitHubRepository, pushToRemote, createGitHubIssuesFromRoadmap, addGitHubCollaborators, promptAddCollaborators } = await import('./generators/git-setup.js');
   const { openInVSCode, displayNextSteps, displaySetupSummary } = await import('./generators/vscode-setup.js');
 
   const stats = {
@@ -125,13 +133,42 @@ export async function generateProject(architecture) {
         dataModels: architecture.dataModels,
         platforms: architecture.platforms,
         firebaseServices: architecture.firebaseServices,
-        cloudFunctions: architecture.cloudFunctions
+        cloudFunctions: architecture.cloudFunctions,
+        userRoles: architecture.userRoles
       };
 
       try {
         const firebaseInfo = await setupFirebaseProject(config);
         stats.firebaseProject = firebaseInfo.projectId;
         console.log('✅ Firebase project configured\n');
+
+        // PHASE 2.5: Auto-configure Firebase services (NEW!)
+        if (architecture.firebase?.autoConfig !== false) {
+          console.log('⚡ Phase 2.5: Auto-configuring Firebase services...\n');
+
+          const autoConfigResult = await autoConfigureFirebaseServices(
+            firebaseInfo.projectId,
+            config
+          );
+
+          displayAutoConfigSummary(autoConfigResult);
+          stats.firebaseAutoConfig = autoConfigResult.success;
+        }
+
+        // PHASE 2.6: Billing setup helper (NEW!)
+        const billingCheck = checkIfBillingNeeded(config);
+
+        if (billingCheck.needed && architecture.firebase?.setupBilling !== false) {
+          console.log('💳 Phase 2.6: Firebase billing setup...\n');
+
+          const billingResult = await guideBillingSetup(firebaseInfo.projectId);
+          displayBillingSummary(billingResult, firebaseInfo.projectId);
+          stats.billingSetup = billingResult.plan;
+        } else if (billingCheck.needed) {
+          console.log('💡 Tip: Your project uses Cloud Functions which require Blaze Plan (pay-as-you-go)');
+          console.log(`   Set up billing later: https://console.firebase.google.com/project/${firebaseInfo.projectId}/usage\n`);
+        }
+
       } catch (error) {
         console.log('⚠️  Firebase setup had issues (continuing...)\n');
       }
@@ -190,6 +227,20 @@ export async function generateProject(architecture) {
           if (architecture.github?.createIssues) {
             const roadmapPath = path.join(projectPath, '.claude', 'ROADMAP.md');
             await createGitHubIssuesFromRoadmap(projectPath, roadmapPath);
+          }
+
+          // Add collaborators (NEW!)
+          if (architecture.github?.collaborators && architecture.github.collaborators.length > 0) {
+            console.log('\n👥 Adding GitHub collaborators...\n');
+            const collabResult = await addGitHubCollaborators(projectPath, architecture.github.collaborators);
+            stats.collaboratorsAdded = collabResult.added?.length || 0;
+          } else if (!architecture.github?.collaborators) {
+            // Prompt user to add collaborators if not specified
+            const collaborators = await promptAddCollaborators(projectPath);
+            if (collaborators && collaborators.length > 0) {
+              const collabResult = await addGitHubCollaborators(projectPath, collaborators);
+              stats.collaboratorsAdded = collabResult.added?.length || 0;
+            }
           }
         }
       }

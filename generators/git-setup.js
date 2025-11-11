@@ -241,6 +241,143 @@ async function setupGitHubFeatures(projectPath) {
 }
 
 /**
+ * Add collaborators to GitHub repository
+ * @param {string} projectPath - Path to project directory
+ * @param {Array<string|Object>} collaborators - Array of usernames or objects with {username, permission}
+ * @returns {Promise<Object>} - Results of adding collaborators
+ */
+export async function addGitHubCollaborators(projectPath, collaborators) {
+  if (!collaborators || collaborators.length === 0) {
+    return { success: false, message: 'No collaborators specified' };
+  }
+
+  const spinner = ora('Adding GitHub collaborators...').start();
+
+  try {
+    // Check if gh CLI is available
+    if (!isGitHubCLIAvailable()) {
+      spinner.fail('GitHub CLI (gh) not found');
+      console.log(chalk.yellow('\n⚠️  Install GitHub CLI to add collaborators automatically'));
+      console.log(chalk.gray('   Install: https://cli.github.com/\n'));
+      return { success: false, message: 'GitHub CLI not available' };
+    }
+
+    // Get the repository name
+    const repoName = execSync('gh repo view --json nameWithOwner --jq .nameWithOwner', {
+      cwd: projectPath,
+      encoding: 'utf-8',
+      stdio: 'pipe'
+    }).trim();
+
+    const results = {
+      success: true,
+      added: [],
+      failed: []
+    };
+
+    for (const collab of collaborators) {
+      // Handle both string usernames and objects with permission
+      const username = typeof collab === 'string' ? collab : collab.username;
+      const permission = typeof collab === 'object' && collab.permission
+        ? collab.permission
+        : 'push'; // Default to push (write) access
+
+      try {
+        spinner.text = `Adding ${username} with ${permission} access...`;
+
+        // Add collaborator using gh CLI
+        execSync(
+          `gh api repos/${repoName}/collaborators/${username} -X PUT -f permission=${permission}`,
+          {
+            cwd: projectPath,
+            stdio: 'pipe'
+          }
+        );
+
+        results.added.push({ username, permission });
+        spinner.succeed(`Added ${username} (${permission} access)`);
+
+      } catch (error) {
+        results.failed.push({ username, error: error.message });
+        spinner.warn(`Failed to add ${username}: ${error.message}`);
+      }
+
+      // Start spinner again for next iteration
+      if (collaborators.indexOf(collab) < collaborators.length - 1) {
+        spinner.start();
+      }
+    }
+
+    if (results.failed.length === 0) {
+      console.log(chalk.green(`\n✅ Successfully added ${results.added.length} collaborator(s)\n`));
+    } else {
+      console.log(chalk.yellow(`\n⚠️  Added ${results.added.length}, failed ${results.failed.length}\n`));
+    }
+
+    return results;
+
+  } catch (error) {
+    spinner.fail('Failed to add collaborators');
+    console.log(chalk.red(`Error: ${error.message}\n`));
+    return { success: false, message: error.message };
+  }
+}
+
+/**
+ * Prompt user to add collaborators interactively
+ */
+export async function promptAddCollaborators(projectPath) {
+  const { addCollabs } = await inquirer.prompt([{
+    type: 'confirm',
+    name: 'addCollabs',
+    message: 'Add collaborators to GitHub repository?',
+    default: false
+  }]);
+
+  if (!addCollabs) {
+    return null;
+  }
+
+  const collaborators = [];
+  let addMore = true;
+
+  while (addMore) {
+    const { username, permission, continueAdding } = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'username',
+        message: 'GitHub username:',
+        validate: (input) => input ? true : 'Username is required'
+      },
+      {
+        type: 'list',
+        name: 'permission',
+        message: 'Access level:',
+        choices: [
+          { name: 'Push (Write access)', value: 'push' },
+          { name: 'Pull (Read-only)', value: 'pull' },
+          { name: 'Admin (Full access)', value: 'admin' },
+          { name: 'Maintain (Maintain repository)', value: 'maintain' },
+          { name: 'Triage (Manage issues)', value: 'triage' }
+        ],
+        default: 'push'
+      },
+      {
+        type: 'confirm',
+        name: 'continueAdding',
+        message: 'Add another collaborator?',
+        default: false
+      }
+    ]);
+
+    collaborators.push({ username, permission });
+    addMore = continueAdding;
+  }
+
+  return collaborators;
+}
+
+/**
  * Optionally create GitHub Issues from roadmap
  */
 export async function createGitHubIssuesFromRoadmap(projectPath, roadmapPath) {

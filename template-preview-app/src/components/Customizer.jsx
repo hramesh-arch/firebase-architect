@@ -1,31 +1,83 @@
+// Customizer: Full customization interface with design system foundation
+// Includes layout selection, colors, typography, navigation, and all preview options
+
 import { useState, useEffect } from 'react';
 import { HexColorPicker } from 'react-colorful';
-import { X, Copy, Check, ArrowLeft, Palette, Type, Monitor, Tablet, Smartphone, RotateCcw } from 'lucide-react';
-import { COLOR_PALETTES, FONT_COMBINATIONS } from '../data/templates';
+import { X, Copy, Check, ArrowLeft, Palette, Type, Monitor, Tablet, Smartphone, RotateCcw, LayoutDashboard, FileText, Grid3x3, Table, ChevronLeft, ChevronRight, Layout, Layers } from 'lucide-react';
+import {
+  COLOR_THEME_LIST,
+  TYPOGRAPHY_LIST,
+  NAVIGATION_STYLES,
+  LAYOUT_TEMPLATE_LIST,
+  DESIGN_SYSTEM_LIST,
+  getDesignSystem,
+  getLayout,
+  getColorTheme,
+  getTypography
+} from '../config/templateConfig';
+import { DesignSystemProvider } from '../providers/DesignSystemProvider';
+
+// Import adaptive dashboard that responds to design system
+import AdaptiveDashboard from './previews/AdaptiveDashboard';
+import MondayDashboard from './previews/MondayDashboard';
+import TrelloDashboard from './previews/TrelloDashboard';
+import FormPreview from './previews/FormPreview';
+import CardsPreview from './previews/CardsPreview';
+import TablePreview from './previews/TablePreview';
 
 export default function Customizer({ template, onClose }) {
-  const [config, setConfig] = useState(() => {
-    // Try to load from localStorage first
-    const saved = localStorage.getItem(`template-${template.id}`);
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        return JSON.parse(JSON.stringify(template.defaultConfig));
-      }
-    }
-    return JSON.parse(JSON.stringify(template.defaultConfig));
+  // Initialize config from the template object (which now has our new structure)
+  const [designSystemId, setDesignSystemId] = useState(template.designSystem.id);
+  const [layoutId, setLayoutId] = useState(template.layout.id);
+  const [themeId, setThemeId] = useState(template.theme.id);
+  const [typographyId, setTypographyId] = useState(template.typography.id);
+  const [navigationStyle, setNavigationStyle] = useState(template.navigationStyle);
+
+  // Get the actual objects
+  const designSystem = getDesignSystem(designSystemId);
+  const layout = getLayout(layoutId);
+  const theme = getColorTheme(themeId);
+  const typography = getTypography(typographyId);
+
+  // Build a config object compatible with existing preview components
+  const [config, setConfig] = useState({
+    colors: theme.colors,
+    typography: {
+      fontFamily: typography.fontFamily,
+      fontSize: typography.fontSize
+    },
+    navigationStyle,
+    spacing: designSystem.foundations.spacing.unit,
+    borderRadius: designSystem.foundations.borderRadius.md,
+    density: 'normal'
   });
+
+  // Update config when selections change
+  useEffect(() => {
+    const newTheme = getColorTheme(themeId);
+    const newTypography = getTypography(typographyId);
+    const newDesignSystem = getDesignSystem(designSystemId);
+
+    setConfig(prev => ({
+      ...prev,
+      colors: newTheme.colors,
+      typography: {
+        fontFamily: newTypography.fontFamily,
+        fontSize: newTypography.fontSize
+      },
+      navigationStyle,
+      spacing: newDesignSystem.foundations.spacing.unit,
+      borderRadius: newDesignSystem.foundations.borderRadius.md
+    }));
+  }, [themeId, typographyId, designSystemId, navigationStyle]);
+
   const [activeColorPicker, setActiveColorPicker] = useState(null);
   const [copied, setCopied] = useState(false);
-  const [previewDevice, setPreviewDevice] = useState('desktop'); // desktop, tablet, mobile
+  const [previewDevice, setPreviewDevice] = useState('desktop');
+  const [previewTab, setPreviewTab] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
 
-  // Save to localStorage whenever config changes
-  useEffect(() => {
-    localStorage.setItem(`template-${template.id}`, JSON.stringify(config));
-  }, [config, template.id]);
-
-  // Device preview widths
   const deviceWidths = {
     desktop: '100%',
     tablet: '768px',
@@ -39,31 +91,25 @@ export default function Customizer({ template, onClose }) {
     }));
   };
 
-  const applyColorPalette = (paletteKey) => {
-    const palette = COLOR_PALETTES[paletteKey];
-    setConfig(prev => ({
-      ...prev,
-      colors: { ...prev.colors, ...palette }
-    }));
+  const applyColorTheme = (newThemeId) => {
+    setThemeId(newThemeId);
   };
 
-  const applyFontCombination = (fontKey) => {
-    const font = FONT_COMBINATIONS[fontKey];
-    setConfig(prev => ({
-      ...prev,
-      typography: { ...prev.typography, fontFamily: font.fontFamily }
-    }));
+  const applyTypography = (newTypographyId) => {
+    setTypographyId(newTypographyId);
   };
 
   const generateConfig = () => {
     return {
       uiTemplate: {
-        templateId: template.id,
-        templateName: template.name,
-        framework: template.framework,
-        customization: config,
-        components: template.components,
-        layouts: template.layouts
+        designSystem: designSystemId,
+        layout: layoutId,
+        theme: themeId,
+        typography: typographyId,
+        navigationStyle,
+        customColors: config.colors,
+        customTypography: config.typography,
+        density: config.density
       }
     };
   };
@@ -77,186 +123,303 @@ export default function Customizer({ template, onClose }) {
 
   const resetToDefault = () => {
     if (confirm('Reset all customizations to default values?')) {
-      const defaultConfig = JSON.parse(JSON.stringify(template.defaultConfig));
-      setConfig(defaultConfig);
-      localStorage.removeItem(`template-${template.id}`);
+      setDesignSystemId(template.designSystem.id);
+      setLayoutId(template.layout.id);
+      setThemeId(template.theme.id);
+      setTypographyId(template.typography.id);
+      setNavigationStyle(template.navigationStyle);
     }
   };
 
+  // Legacy template mapping for existing preview components
+  const legacyTemplate = {
+    id: designSystemId,
+    name: designSystem.name,
+    framework: 'React',
+    defaultConfig: config
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="fixed inset-0 bg-gray-50 flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={onClose}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">{template.name}</h2>
-                <p className="text-sm text-gray-600">{template.framework}</p>
-              </div>
+      <div className="bg-white border-b border-gray-200 flex-shrink-0 z-10">
+        <div className="px-6 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              title="Back to gallery"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div>
+              <h2 className="text-lg font-bold text-gray-900">{designSystem.name} Template</h2>
+              <p className="text-xs text-gray-600">{layout.name} • {theme.name}</p>
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={resetToDefault}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                title="Reset to default"
-              >
-                <RotateCcw className="w-4 h-4" />
-                <span className="hidden sm:inline">Reset</span>
-              </button>
-              <button
-                onClick={copyToClipboard}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
-                  copied
-                    ? 'bg-green-600 text-white scale-105'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
-                }`}
-              >
-                {copied ? <Check className="w-4 h-4 animate-bounce" /> : <Copy className="w-4 h-4" />}
-                {copied ? 'Copied!' : 'Copy Configuration'}
-              </button>
-            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setLeftSidebarOpen(!leftSidebarOpen)}
+              className="flex items-center gap-2 px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              title={leftSidebarOpen ? "Hide design systems" : "Show design systems"}
+            >
+              {leftSidebarOpen ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+              <span className="hidden sm:inline text-sm">{leftSidebarOpen ? 'Hide' : 'Design Systems'}</span>
+            </button>
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="flex items-center gap-2 px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              title={sidebarOpen ? "Hide customization" : "Show customization"}
+            >
+              {sidebarOpen ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+              <span className="hidden sm:inline text-sm">{sidebarOpen ? 'Hide' : 'Customize'}</span>
+            </button>
+            <button
+              onClick={resetToDefault}
+              className="p-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              title="Reset to default"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+            <button
+              onClick={copyToClipboard}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 text-sm ${
+                copied
+                  ? 'bg-green-600 text-white scale-105'
+                  : 'bg-blue-600 text-white hover:bg-blue-700'
+              }`}
+            >
+              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              {copied ? 'Copied!' : 'Copy Config'}
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Preview Area */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">Live Preview</h3>
-
-                {/* Device Selector */}
-                <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-                  <button
-                    onClick={() => setPreviewDevice('desktop')}
-                    className={`p-2 rounded transition-colors ${
-                      previewDevice === 'desktop'
-                        ? 'bg-white shadow-sm text-blue-600'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                    title="Desktop (1920px)"
-                  >
-                    <Monitor className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setPreviewDevice('tablet')}
-                    className={`p-2 rounded transition-colors ${
-                      previewDevice === 'tablet'
-                        ? 'bg-white shadow-sm text-blue-600'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                    title="Tablet (768px)"
-                  >
-                    <Tablet className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setPreviewDevice('mobile')}
-                    className={`p-2 rounded transition-colors ${
-                      previewDevice === 'mobile'
-                        ? 'bg-white shadow-sm text-blue-600'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                    title="Mobile (375px)"
-                  >
-                    <Smartphone className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Preview Content with Responsive Width */}
-              <div className="flex justify-center">
-                <div
-                  className="space-y-4 transition-all duration-300"
-                  style={{
-                    width: deviceWidths[previewDevice],
-                    maxWidth: '100%'
-                  }}
+      {/* Main content */}
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* Left Sidebar - Design System Switcher */}
+        <div
+          className={`fixed left-0 top-0 h-full bg-white border-r border-gray-200 shadow-lg transition-transform duration-300 ease-in-out z-20 ${
+            leftSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+          style={{ width: '320px', marginTop: '60px' }}
+        >
+          <div className="h-full overflow-y-auto p-4">
+            <div className="flex items-center gap-2 mb-4 px-2">
+              <Layers className="w-5 h-5 text-gray-700" />
+              <h3 className="text-lg font-bold text-gray-900">Design Systems</h3>
+            </div>
+            <p className="text-sm text-gray-600 mb-4 px-2">
+              Switch between different enterprise design systems to see how they affect your template
+            </p>
+            <div className="space-y-2">
+              {DESIGN_SYSTEM_LIST.map(ds => (
+                <button
+                  key={ds.id}
+                  onClick={() => setDesignSystemId(ds.id)}
+                  className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                    designSystemId === ds.id
+                      ? 'border-blue-600 bg-blue-50 shadow-md'
+                      : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                  }`}
                 >
-                {/* Color Preview */}
-                <div className="p-6 rounded-lg" style={{ backgroundColor: config.colors.primary }}>
-                  <div className="text-white">
-                    <h4 className="text-2xl font-bold mb-2" style={{ fontFamily: config.typography.fontFamily }}>
-                      {template.name}
-                    </h4>
-                    <p style={{ fontFamily: config.typography.fontFamily, fontSize: `${config.typography.fontSize}px` }}>
-                      This is how your application will look with these colors and typography.
-                    </p>
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <div className="font-bold text-gray-900">{ds.name}</div>
+                      {ds.vendor && (
+                        <div className="text-xs text-gray-500 mt-0.5">{ds.vendor}</div>
+                      )}
+                    </div>
+                    {designSystemId === ds.id && (
+                      <div className="bg-blue-600 rounded-full p-1">
+                        <Check className="w-4 h-4 text-white" />
+                      </div>
+                    )}
                   </div>
-                </div>
+                  <p className="text-xs text-gray-600 mb-2">{ds.description}</p>
+                  {ds.usedBy && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {ds.usedBy.slice(0, 3).map((product, i) => (
+                        <span
+                          key={i}
+                          className="text-xs px-2 py-0.5 bg-gray-100 text-gray-700 rounded"
+                        >
+                          {product}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
 
-                {/* Button Samples */}
-                <div className="grid grid-cols-2 gap-4">
-                  {Object.entries(config.colors).slice(0, 6).map(([name, color]) => (
-                    <button
-                      key={name}
-                      className="px-4 py-2 rounded text-white font-medium capitalize"
-                      style={{
-                        backgroundColor: color,
-                        fontFamily: config.typography.fontFamily,
-                        borderRadius: `${config.borderRadius}px`
-                      }}
-                    >
-                      {name} Button
-                    </button>
-                  ))}
-                </div>
+        {/* Preview Area */}
+        <div
+          className={`flex-1 overflow-hidden flex flex-col bg-white transition-all duration-300 ${
+            leftSidebarOpen ? 'ml-[320px]' : 'ml-0'
+          }`}
+        >
+          {/* Preview Controls */}
+          <div className="px-6 py-3 bg-white border-b border-gray-200 flex items-center justify-between flex-shrink-0">
+            {/* Preview Tabs */}
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setPreviewTab('dashboard')}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  previewTab === 'dashboard'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                Dashboard
+              </button>
+              <button
+                onClick={() => setPreviewTab('form')}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  previewTab === 'form'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                <FileText className="w-4 h-4" />
+                Forms
+              </button>
+              <button
+                onClick={() => setPreviewTab('cards')}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  previewTab === 'cards'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                <Grid3x3 className="w-4 h-4" />
+                Cards
+              </button>
+              <button
+                onClick={() => setPreviewTab('table')}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  previewTab === 'table'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                <Table className="w-4 h-4" />
+                Table
+              </button>
+            </div>
 
-                {/* Card Sample */}
-                <div
-                  className="border p-4"
-                  style={{
-                    borderRadius: `${config.borderRadius}px`,
-                    fontFamily: config.typography.fontFamily
-                  }}
-                >
-                  <h5 className="font-semibold mb-2" style={{ fontSize: `${config.typography.fontSize + 2}px` }}>
-                    Card Component
-                  </h5>
-                  <p className="text-gray-600" style={{ fontSize: `${config.typography.fontSize}px` }}>
-                    This is a sample card showing how your content will appear.
-                  </p>
-                </div>
-                </div>
-              </div>
+            {/* Device Selector */}
+            <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => setPreviewDevice('desktop')}
+                className={`p-2 rounded transition-colors ${
+                  previewDevice === 'desktop'
+                    ? 'bg-white shadow-sm text-blue-600'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+                title="Desktop"
+              >
+                <Monitor className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setPreviewDevice('tablet')}
+                className={`p-2 rounded transition-colors ${
+                  previewDevice === 'tablet'
+                    ? 'bg-white shadow-sm text-blue-600'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+                title="Tablet"
+              >
+                <Tablet className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setPreviewDevice('mobile')}
+                className={`p-2 rounded transition-colors ${
+                  previewDevice === 'mobile'
+                    ? 'bg-white shadow-sm text-blue-600'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+                title="Mobile"
+              >
+                <Smartphone className="w-4 h-4" />
+              </button>
             </div>
           </div>
 
-          {/* Customization Panel */}
-          <div className="space-y-6">
+          {/* Preview Content */}
+          <div className="flex-1 overflow-auto bg-gray-100">
+            <div
+              className="transition-all duration-300 mx-auto h-full"
+              style={{
+                width: deviceWidths[previewDevice],
+                maxWidth: '100%',
+                minWidth: previewDevice === 'mobile' ? '375px' : 'auto'
+              }}
+            >
+              <DesignSystemProvider system={designSystem} theme={theme}>
+                {previewTab === 'dashboard' && (
+                  <AdaptiveDashboard config={config} />
+                )}
+                {previewTab === 'form' && (
+                  <div className="bg-gray-50 p-8 min-h-full">
+                    <FormPreview config={config} template={legacyTemplate} />
+                  </div>
+                )}
+                {previewTab === 'cards' && (
+                  <div className="bg-gray-50 min-h-full">
+                    <CardsPreview config={config} template={legacyTemplate} />
+                  </div>
+                )}
+                {previewTab === 'table' && (
+                  <div className="bg-gray-50 p-8 min-h-full">
+                    <TablePreview config={config} template={legacyTemplate} />
+                  </div>
+                )}
+              </DesignSystemProvider>
+            </div>
+          </div>
+        </div>
+
+        {/* Customization Sidebar */}
+        <div
+          className={`fixed right-0 top-0 h-full bg-white border-l border-gray-200 shadow-2xl transition-transform duration-300 ease-in-out z-20 ${
+            sidebarOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+          style={{ width: '400px', marginTop: '60px' }}
+        >
+          <div className="h-full overflow-y-auto p-6 space-y-6">
             {/* Colors */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-white rounded-lg border border-gray-200 p-5">
               <div className="flex items-center gap-2 mb-4">
                 <Palette className="w-5 h-5 text-gray-700" />
                 <h3 className="text-lg font-semibold">Colors</h3>
               </div>
 
-              {/* Color Presets */}
+              {/* Color Theme Presets */}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Quick Presets
+                  Color Themes
                 </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {Object.entries(COLOR_PALETTES).map(([key, palette]) => (
+                <div className="grid grid-cols-1 gap-2">
+                  {COLOR_THEME_LIST.map(t => (
                     <button
-                      key={key}
-                      onClick={() => applyColorPalette(key)}
-                      className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded hover:border-blue-500 transition-colors text-sm"
+                      key={t.id}
+                      onClick={() => applyColorTheme(t.id)}
+                      className={`flex items-center gap-2 px-3 py-2 border rounded transition-colors text-sm ${
+                        themeId === t.id
+                          ? 'border-blue-600 bg-blue-50'
+                          : 'border-gray-300 hover:border-blue-500'
+                      }`}
                     >
-                      <div className="flex gap-1">
-                        {Object.values(palette).slice(0, 3).map((color, i) => (
-                          <div key={i} className="w-4 h-4 rounded-sm" style={{ backgroundColor: color }} />
-                        ))}
-                      </div>
-                      <span className="text-xs capitalize">{key.split('-').join(' ')}</span>
+                      <div
+                        className="w-4 h-4 rounded"
+                        style={{ backgroundColor: t.colors.primary }}
+                      />
+                      <span className="text-xs font-medium">{t.name}</span>
                     </button>
                   ))}
                 </div>
@@ -292,36 +455,59 @@ export default function Customizer({ template, onClose }) {
               </div>
             </div>
 
+            {/* Navigation & Layout */}
+            <div className="bg-white rounded-lg border border-gray-200 p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <LayoutDashboard className="w-5 h-5 text-gray-700" />
+                <h3 className="text-lg font-semibold">Navigation</h3>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Navigation Style
+                </label>
+                <select
+                  value={navigationStyle}
+                  onChange={(e) => setNavigationStyle(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                >
+                  {NAVIGATION_STYLES.map(nav => (
+                    <option key={nav.id} value={nav.id}>
+                      {nav.name} - {nav.description}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             {/* Typography */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-white rounded-lg border border-gray-200 p-5">
               <div className="flex items-center gap-2 mb-4">
                 <Type className="w-5 h-5 text-gray-700" />
                 <h3 className="text-lg font-semibold">Typography</h3>
               </div>
 
               <div className="space-y-4">
-                {/* Font Presets */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Font Combinations
+                    Font Family
                   </label>
                   <select
-                    onChange={(e) => applyFontCombination(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={typographyId}
+                    onChange={(e) => applyTypography(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   >
-                    <option value="">Select a preset...</option>
-                    {Object.entries(FONT_COMBINATIONS).map(([key, font]) => (
-                      <option key={key} value={key}>
-                        {key.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')} - {font.description}
+                    {TYPOGRAPHY_LIST.map(t => (
+                      <option key={t.id} value={t.id}>
+                        {t.name}
                       </option>
                     ))}
                   </select>
                 </div>
 
-                {/* Font Size */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Base Font Size: {config.typography.fontSize}px
+                    Font Size: {config.typography.fontSize}px
                   </label>
                   <input
                     type="range"
@@ -336,10 +522,55 @@ export default function Customizer({ template, onClose }) {
                   />
                 </div>
 
-                {/* Spacing */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Spacing Scale: {config.spacing}
+                    Line Height: {config.typography.lineHeight || 1.5}
+                  </label>
+                  <input
+                    type="range"
+                    min="1.2"
+                    max="2.0"
+                    step="0.1"
+                    value={config.typography.lineHeight || 1.5}
+                    onChange={(e) => setConfig(prev => ({
+                      ...prev,
+                      typography: { ...prev.typography, lineHeight: parseFloat(e.target.value) }
+                    }))}
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Letter Spacing: {config.typography.letterSpacing || 0}px
+                  </label>
+                  <input
+                    type="range"
+                    min="-1"
+                    max="2"
+                    step="0.1"
+                    value={config.typography.letterSpacing || 0}
+                    onChange={(e) => setConfig(prev => ({
+                      ...prev,
+                      typography: { ...prev.typography, letterSpacing: parseFloat(e.target.value) }
+                    }))}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Design Foundations */}
+            <div className="bg-white rounded-lg border border-gray-200 p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <LayoutDashboard className="w-5 h-5 text-gray-700" />
+                <h3 className="text-lg font-semibold">Design Foundations</h3>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Spacing Scale: {config.spacing}px
                   </label>
                   <input
                     type="range"
@@ -347,54 +578,70 @@ export default function Customizer({ template, onClose }) {
                     max="16"
                     step="2"
                     value={config.spacing}
-                    onChange={(e) => setConfig(prev => ({ ...prev, spacing: parseInt(e.target.value) }))}
+                    onChange={(e) => setConfig(prev => ({
+                      ...prev,
+                      spacing: parseInt(e.target.value)
+                    }))}
                     className="w-full"
                   />
+                  <p className="text-xs text-gray-500 mt-1">Base unit for all spacing in the design</p>
                 </div>
 
-                {/* Border Radius */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Border Radius: {config.borderRadius}px
+                    Border Radius: {config.borderRadius || 8}px
                   </label>
                   <input
                     type="range"
                     min="0"
-                    max="16"
-                    value={config.borderRadius}
-                    onChange={(e) => setConfig(prev => ({ ...prev, borderRadius: parseInt(e.target.value) }))}
+                    max="24"
+                    step="2"
+                    value={config.borderRadius || 8}
+                    onChange={(e) => setConfig(prev => ({
+                      ...prev,
+                      borderRadius: parseInt(e.target.value)
+                    }))}
                     className="w-full"
                   />
+                  <p className="text-xs text-gray-500 mt-1">Roundness of corners for cards, buttons, inputs</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Shadow Intensity
+                  </label>
+                  <select
+                    value={config.shadowIntensity || 'medium'}
+                    onChange={(e) => setConfig(prev => ({
+                      ...prev,
+                      shadowIntensity: e.target.value
+                    }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  >
+                    <option value="none">None</option>
+                    <option value="subtle">Subtle</option>
+                    <option value="medium">Medium</option>
+                    <option value="strong">Strong</option>
+                  </select>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Code Output */}
-        <div className="mt-8 bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold mb-4">Configuration Code</h3>
-          <div className="relative">
-            <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
-              <code>{JSON.stringify(generateConfig(), null, 2)}</code>
-            </pre>
-            <button
-              onClick={copyToClipboard}
-              className="absolute top-2 right-2 p-2 bg-gray-700 hover:bg-gray-600 rounded text-white transition-colors"
-            >
-              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-            </button>
-          </div>
-
-          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h4 className="font-semibold text-blue-900 mb-2">How to Use:</h4>
-            <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
-              <li>Copy the configuration code above</li>
-              <li>Open Claude Code in VS Code</li>
-              <li>Type <code className="px-2 py-1 bg-blue-100 rounded">/new-firebase-app</code></li>
-              <li>When asked about UI template, paste this configuration</li>
-              <li>Claude Code will set up your project with this template!</li>
-            </ol>
+            {/* Config Code */}
+            <div className="bg-white rounded-lg border border-gray-200 p-5">
+              <h3 className="text-lg font-semibold mb-3">Configuration</h3>
+              <div className="relative">
+                <pre className="bg-gray-900 text-gray-100 p-3 rounded-lg overflow-x-auto text-xs max-h-60">
+                  <code>{JSON.stringify(generateConfig(), null, 2)}</code>
+                </pre>
+                <button
+                  onClick={copyToClipboard}
+                  className="absolute top-2 right-2 p-2 bg-gray-700 hover:bg-gray-600 rounded text-white transition-colors"
+                >
+                  {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

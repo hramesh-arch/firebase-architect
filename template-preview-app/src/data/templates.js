@@ -159,57 +159,251 @@ export const UI_TEMPLATES = {
     },
     components: ['Card', 'Button', 'Input', 'Select', 'DataTable', 'SearchBar', 'FilterPanel', 'ActionMenu'],
     layouts: ['dashboard', 'list-with-filters', 'detail-view', 'profile', 'settings']
+  },
+
+  'linear-modern': {
+    id: 'linear-modern',
+    name: 'Linear Modern',
+    description: 'Minimalist, keyboard-first design inspired by Linear. Fast, clean, and efficient.',
+    framework: 'React + Tailwind',
+    category: 'modern',
+    badge: 'Fast',
+    defaultConfig: {
+      colors: {
+        primary: '#5e6ad2',
+        secondary: '#8b8d98',
+        success: '#0f9960',
+        warning: '#ffab00',
+        error: '#e5493a',
+        info: '#4dabf7'
+      },
+      typography: {
+        fontFamily: "'Inter', -apple-system, sans-serif",
+        fontSize: 14
+      },
+      spacing: 8,
+      borderRadius: 6
+    },
+    components: ['CommandBar', 'IssueCard', 'Sidebar', 'Modal', 'Dropdown'],
+    layouts: ['issues', 'projects', 'roadmap', 'inbox']
+  },
+
+  'notion-flexible': {
+    id: 'notion-flexible',
+    name: 'Notion Flexible',
+    description: 'Block-based, highly flexible design inspired by Notion. Drag-and-drop everything.',
+    framework: 'React + Custom Blocks',
+    category: 'modern',
+    badge: 'Flexible',
+    defaultConfig: {
+      colors: {
+        primary: '#2383e2',
+        secondary: '#787774',
+        success: '#0f7b6c',
+        warning: '#f3aa18',
+        error: '#eb5757',
+        info: '#529cca'
+      },
+      typography: {
+        fontFamily: "'ui-sans-serif', -apple-system, sans-serif",
+        fontSize: 14
+      },
+      spacing: 8,
+      borderRadius: 3
+    },
+    components: ['Block', 'Page', 'Database', 'PropertyPicker', 'Sidebar'],
+    layouts: ['page', 'database', 'calendar', 'board']
+  },
+
+  'asana-robust': {
+    id: 'asana-robust',
+    name: 'Asana Robust',
+    description: 'Full-featured project management UI inspired by Asana. Lists, boards, timelines.',
+    framework: 'React + Redux',
+    category: 'enterprise',
+    badge: 'Robust',
+    defaultConfig: {
+      colors: {
+        primary: '#f06a6a',
+        secondary: '#848199',
+        success: '#6fc194',
+        warning: '#fcc34d',
+        error: '#ff6b6b',
+        info: '#4299e1'
+      },
+      typography: {
+        fontFamily: "'Helvetica Neue', Arial, sans-serif",
+        fontSize: 13
+      },
+      spacing: 8,
+      borderRadius: 4
+    },
+    components: ['TaskCard', 'ListView', 'BoardView', 'Timeline', 'Sidebar', 'CustomFields'],
+    layouts: ['list', 'board', 'timeline', 'calendar', 'portfolio']
+  },
+
+  'airtable-grid': {
+    id: 'airtable-grid',
+    name: 'Airtable Grid',
+    description: 'Spreadsheet-like grid view inspired by Airtable. Excel meets database power.',
+    framework: 'React + Grid System',
+    category: 'modern',
+    badge: 'Data',
+    defaultConfig: {
+      colors: {
+        primary: '#2d7ff9',
+        secondary: '#6c757d',
+        success: '#18bfff',
+        warning: '#fcb400',
+        error: '#f82b60',
+        info: '#2d7ff9'
+      },
+      typography: {
+        fontFamily: "'Inter', -apple-system, sans-serif",
+        fontSize: 13
+      },
+      spacing: 0,
+      borderRadius: 4
+    },
+    components: ['GridCell', 'ColumnHeader', 'RowNumber', 'FieldType', 'FilterBar'],
+    layouts: ['grid', 'gallery', 'kanban', 'calendar']
+  },
+
+  'monday-timeline': {
+    id: 'monday-timeline',
+    name: 'Monday Timeline',
+    description: 'Timeline and Gantt view inspired by Monday.com. Visual project scheduling.',
+    framework: 'React + Timeline',
+    category: 'enterprise',
+    badge: 'Visual',
+    defaultConfig: {
+      colors: {
+        primary: '#ff5ac4',
+        secondary: '#676879',
+        success: '#00ca72',
+        warning: '#fdab3d',
+        error: '#e44258',
+        info: '#0086c0'
+      },
+      typography: {
+        fontFamily: "'Poppins', -apple-system, sans-serif",
+        fontSize: 14
+      },
+      spacing: 8,
+      borderRadius: 6
+    },
+    components: ['TimelineBar', 'TaskRow', 'DateHeader', 'GroupCollapse', 'StatusColumn'],
+    layouts: ['main-table', 'timeline', 'calendar', 'gantt']
+  },
+
+  'trello-board': {
+    id: 'trello-board',
+    name: 'Trello Board',
+    description: 'Visual card-based board inspired by Trello. Simple, intuitive drag and drop.',
+    framework: 'React + DnD',
+    category: 'modern',
+    badge: 'Simple',
+    defaultConfig: {
+      colors: {
+        primary: '#0079bf',
+        secondary: '#5e6c84',
+        success: '#61bd4f',
+        warning: '#f2d600',
+        error: '#eb5a46',
+        info: '#00c2e0'
+      },
+      typography: {
+        fontFamily: "'-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        fontSize: 14
+      },
+      spacing: 8,
+      borderRadius: 8
+    },
+    components: ['Card', 'List', 'Board', 'Label', 'Checklist', 'CoverImage'],
+    layouts: ['board']
   }
 };
 
 export const COLOR_PALETTES = {
-  'blue-professional': {
-    primary: '#1976d2',
-    secondary: '#dc004e',
-    success: '#4caf50',
-    warning: '#ff9800',
-    error: '#f44336',
-    info: '#2196f3'
+  'grayscale-minimal': {
+    primary: '#1a1a1a',
+    secondary: '#666666',
+    success: '#2d3748',
+    warning: '#4a5568',
+    error: '#000000',
+    info: '#4a5568'
   },
-  'green-healthcare': {
-    primary: '#00a86b',
-    secondary: '#0066cc',
-    success: '#28a745',
-    warning: '#ffc107',
-    error: '#dc3545',
-    info: '#17a2b8'
+  'charcoal-pro': {
+    primary: '#2d3748',
+    secondary: '#4a5568',
+    success: '#48bb78',
+    warning: '#ed8936',
+    error: '#f56565',
+    info: '#4299e1'
   },
-  'purple-creative': {
-    primary: '#6c63ff',
-    secondary: '#ff6b9d',
-    success: '#4caf50',
-    warning: '#ffa726',
-    error: '#ef5350',
-    info: '#42a5f5'
+  'vibrant-bold': {
+    primary: '#e91e63',
+    secondary: '#9c27b0',
+    success: '#00e676',
+    warning: '#ffea00',
+    error: '#ff1744',
+    info: '#00b0ff'
   },
-  'teal-modern': {
-    primary: '#14b8a6',
-    secondary: '#8b5cf6',
-    success: '#10b981',
-    warning: '#f59e0b',
-    error: '#ef4444',
-    info: '#3b82f6'
+  'ocean-blue': {
+    primary: '#0077b6',
+    secondary: '#00b4d8',
+    success: '#06d6a0',
+    warning: '#ffd60a',
+    error: '#ef476f',
+    info: '#0096c7'
   },
-  'indigo-enterprise': {
-    primary: '#3730a3',
-    secondary: '#059669',
-    success: '#10b981',
-    warning: '#f59e0b',
-    error: '#dc2626',
-    info: '#2563eb'
+  'sunset-warm': {
+    primary: '#ff6b35',
+    secondary: '#f7931e',
+    success: '#6ab04c',
+    warning: '#f9ca24',
+    error: '#eb4d4b',
+    info: '#4834d4'
   },
-  'orange-energetic': {
-    primary: '#ea580c',
-    secondary: '#0891b2',
-    success: '#16a34a',
-    warning: '#ca8a04',
-    error: '#dc2626',
-    info: '#0284c7'
+  'forest-earth': {
+    primary: '#2d6a4f',
+    secondary: '#52b788',
+    success: '#40916c',
+    warning: '#e76f51',
+    error: '#d62828',
+    info: '#457b9d'
+  },
+  'royal-purple': {
+    primary: '#6a4c93',
+    secondary: '#8a5a44',
+    success: '#52b788',
+    warning: '#fb8500',
+    error: '#d62828',
+    info: '#4361ee'
+  },
+  'neon-cyber': {
+    primary: '#00fff9',
+    secondary: '#ff006e',
+    success: '#39ff14',
+    warning: '#ffbe0b',
+    error: '#ff006e',
+    info: '#8338ec'
+  },
+  'pastel-soft': {
+    primary: '#a8dadc',
+    secondary: '#f1faee',
+    success: '#90e0ef',
+    warning: '#ffd97d',
+    error: '#e76f51',
+    info: '#457b9d'
+  },
+  'midnight-dark': {
+    primary: '#0d1b2a',
+    secondary: '#1b263b',
+    success: '#2a9d8f',
+    warning: '#e9c46a',
+    error: '#e76f51',
+    info: '#457b9d'
   }
 };
 
