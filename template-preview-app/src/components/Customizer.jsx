@@ -29,6 +29,9 @@ import CarbonFormPreview from './previews/CarbonFormPreview';
 import FluentCardsPreview from './previews/FluentCardsPreview';
 import FluentTablePreview from './previews/FluentTablePreview';
 import FluentFormPreview from './previews/FluentFormPreview';
+import AntDesignCardsPreview from './previews/AntDesignCardsPreview';
+import AntDesignTablePreview from './previews/AntDesignTablePreview';
+import AntDesignFormPreview from './previews/AntDesignFormPreview';
 import MondayDashboard from './previews/MondayDashboard';
 import TrelloDashboard from './previews/TrelloDashboard';
 import FormPreview from './previews/FormPreview';
@@ -388,6 +391,8 @@ export default function Customizer({ template, onClose }) {
                       <CarbonFormPreview config={config} />
                     ) : designSystemId === 'fluent' ? (
                       <FluentFormPreview config={config} />
+                    ) : designSystemId === 'antd' ? (
+                      <AntDesignFormPreview config={config} />
                     ) : (
                       <div className="bg-gray-50 p-8 min-h-full">
                         <FormPreview config={config} template={legacyTemplate} />
@@ -403,6 +408,8 @@ export default function Customizer({ template, onClose }) {
                       <CarbonCardsPreview config={config} />
                     ) : designSystemId === 'fluent' ? (
                       <FluentCardsPreview config={config} />
+                    ) : designSystemId === 'antd' ? (
+                      <AntDesignCardsPreview config={config} />
                     ) : (
                       <div className="bg-gray-50 min-h-full">
                         <CardsPreview config={config} template={legacyTemplate} />
@@ -418,6 +425,8 @@ export default function Customizer({ template, onClose }) {
                       <CarbonTablePreview config={config} />
                     ) : designSystemId === 'fluent' ? (
                       <FluentTablePreview config={config} />
+                    ) : designSystemId === 'antd' ? (
+                      <AntDesignTablePreview config={config} />
                     ) : (
                       <div className="bg-gray-50 p-8 min-h-full">
                         <TablePreview config={config} template={legacyTemplate} />
