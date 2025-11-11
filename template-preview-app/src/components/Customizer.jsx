@@ -26,6 +26,9 @@ import Material3FormPreview from './previews/Material3FormPreview';
 import CarbonCardsPreview from './previews/CarbonCardsPreview';
 import CarbonTablePreview from './previews/CarbonTablePreview';
 import CarbonFormPreview from './previews/CarbonFormPreview';
+import FluentCardsPreview from './previews/FluentCardsPreview';
+import FluentTablePreview from './previews/FluentTablePreview';
+import FluentFormPreview from './previews/FluentFormPreview';
 import MondayDashboard from './previews/MondayDashboard';
 import TrelloDashboard from './previews/TrelloDashboard';
 import FormPreview from './previews/FormPreview';
@@ -383,6 +386,8 @@ export default function Customizer({ template, onClose }) {
                       <Material3FormPreview config={config} />
                     ) : designSystemId === 'carbon' ? (
                       <CarbonFormPreview config={config} />
+                    ) : designSystemId === 'fluent' ? (
+                      <FluentFormPreview config={config} />
                     ) : (
                       <div className="bg-gray-50 p-8 min-h-full">
                         <FormPreview config={config} template={legacyTemplate} />
@@ -396,6 +401,8 @@ export default function Customizer({ template, onClose }) {
                       <Material3CardsPreview config={config} />
                     ) : designSystemId === 'carbon' ? (
                       <CarbonCardsPreview config={config} />
+                    ) : designSystemId === 'fluent' ? (
+                      <FluentCardsPreview config={config} />
                     ) : (
                       <div className="bg-gray-50 min-h-full">
                         <CardsPreview config={config} template={legacyTemplate} />
@@ -409,6 +416,8 @@ export default function Customizer({ template, onClose }) {
                       <Material3TablePreview config={config} />
                     ) : designSystemId === 'carbon' ? (
                       <CarbonTablePreview config={config} />
+                    ) : designSystemId === 'fluent' ? (
+                      <FluentTablePreview config={config} />
                     ) : (
                       <div className="bg-gray-50 p-8 min-h-full">
                         <TablePreview config={config} template={legacyTemplate} />
